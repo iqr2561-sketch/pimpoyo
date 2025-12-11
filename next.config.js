@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverActions: true,
-  },
   // Configuración para WebSocket/HMR
   webpack: (config, { isServer }) => {
     if (!isServer) {
