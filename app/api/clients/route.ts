@@ -20,8 +20,8 @@ export async function GET(request: NextRequest) {
         companyId,
         ...(search && {
           OR: [
-            { name: { contains: search, mode: 'insensitive' } },
-            { cuit: { contains: search, mode: 'insensitive' } },
+            { name: { contains: search } },
+            { cuit: { contains: search } },
           ],
         }),
       },
