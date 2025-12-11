@@ -1,0 +1,241 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { Header } from '@/components/layout/Header'
+import { Sidebar } from '@/components/layout/Sidebar'
+import { DocumentCard } from '@/components/documents/DocumentCard'
+import { StatsCard } from '@/components/dashboard/StatsCard'
+import { Button } from '@/components/ui/Button'
+import { Card } from '@/components/ui/Card'
+import { formatCurrency } from '@/lib/utils'
+import Link from 'next/link'
+
+interface Document {
+  id: string
+  type: string
+  number: string
+  date: Date | string
+  total: number
+  status: string
+  client: {
+    name: string
+  }
+}
+
+interface Stats {
+  sales: { total: number; count: number }
+  invoices: { total: number; count: number }
+  documents: { total: number }
+  lowStock: number
+  lowStockItems: Array<{ product: { name: string }; quantity: number; minQuantity: number }>
+  topProducts: Array<{ product: { name: string }; quantity: number; total: number }>
+}
+
+export default function Dashboard() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
+  const [documents, setDocuments] = useState<Document[]>([])
+  const [stats, setStats] = useState<Stats | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [period, setPeriod] = useState('month')
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/')
+      return
+    }
+
+    if (status === 'authenticated') {
+      fetchData()
+    }
+  }, [status, router, period])
+
+  const fetchData = async () => {
+    try {
+      const [docsRes, statsRes] = await Promise.all([
+        fetch('/api/documents'),
+        fetch(`/api/stats?period=${period}`),
+      ])
+
+      if (docsRes.ok) {
+        const docs = await docsRes.json()
+        setDocuments(docs.slice(0, 6)) // Últimos 6 documentos
+      }
+
+      if (statsRes.ok) {
+        const statsData = await statsRes.json()
+        setStats(statsData)
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  if (status === 'loading' || isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div>Cargando...</div>
+      </div>
+    )
+  }
+
+  if (status === 'unauthenticated') {
+    return null
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <div className="flex">
+        <Sidebar />
+        <main className="flex-1 p-6">
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">Panel de Control</h2>
+              <div className="flex gap-2">
+                <select
+                  value={period}
+                  onChange={(e) => setPeriod(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="day">Hoy</option>
+                  <option value="week">Esta Semana</option>
+                  <option value="month">Este Mes</option>
+                  <option value="year">Este Año</option>
+                </select>
+                <Link href="/documents/new">
+                  <Button>Nuevo Documento</Button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Estadísticas */}
+            {stats && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <StatsCard
+                  title="Ventas Totales"
+                  value={formatCurrency(stats.sales.total)}
+                  subtitle={`${stats.sales.count} ventas`}
+                />
+                <StatsCard
+                  title="Facturas Pagadas"
+                  value={formatCurrency(stats.invoices.total)}
+                  subtitle={`${stats.invoices.count} facturas`}
+                />
+                <StatsCard
+                  title="Documentos"
+                  value={stats.documents.total}
+                  subtitle="Total generados"
+                />
+                <StatsCard
+                  title="Stock Bajo"
+                  value={stats.lowStock}
+                  subtitle="Productos"
+                  trend={
+                    stats.lowStock > 0
+                      ? { value: stats.lowStock, isPositive: false }
+                      : undefined
+                  }
+                />
+              </div>
+            )}
+
+            {/* Stock Bajo y Top Productos */}
+            {stats && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                {/* Stock Bajo */}
+                {stats.lowStockItems.length > 0 && (
+                  <Card title="Productos con Stock Bajo">
+                    <div className="space-y-2">
+                      {stats.lowStockItems.slice(0, 5).map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="flex justify-between items-center p-2 bg-red-50 rounded"
+                        >
+                          <span className="font-medium">{item.product.name}</span>
+                          <span className="text-red-600 font-bold">
+                            {item.quantity} / {item.minQuantity} min
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <Link href="/products">
+                      <Button variant="outline" size="sm" className="mt-4 w-full">
+                        Ver Todos los Productos
+                      </Button>
+                    </Link>
+                  </Card>
+                )}
+
+                {/* Top Productos */}
+                {stats.topProducts.length > 0 && (
+                  <Card title="Productos Más Vendidos">
+                    <div className="space-y-2">
+                      {stats.topProducts.map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="flex justify-between items-center p-2 bg-gray-50 rounded"
+                        >
+                          <div>
+                            <span className="font-medium">{item.product.name}</span>
+                            <p className="text-sm text-gray-500">
+                              {item.quantity} unidades
+                            </p>
+                          </div>
+                          <span className="font-bold">{formatCurrency(item.total)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                )}
+              </div>
+            )}
+
+            {/* Documentos Recientes */}
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold">Documentos Recientes</h3>
+                <Link href="/documents">
+                  <Button variant="outline" size="sm">
+                    Ver Todos
+                  </Button>
+                </Link>
+              </div>
+
+              {documents.length === 0 ? (
+                <Card>
+                  <div className="text-center py-12">
+                    <p className="text-gray-500 mb-4">No hay documentos aún</p>
+                    <Link href="/documents/new">
+                      <Button>Crear Primer Documento</Button>
+                    </Link>
+                  </div>
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {documents.map((doc) => (
+                    <DocumentCard
+                      key={doc.id}
+                      id={doc.id}
+                      type={doc.type}
+                      number={doc.number}
+                      date={doc.date}
+                      clientName={doc.client.name}
+                      total={doc.total}
+                      status={doc.status}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  )
+}

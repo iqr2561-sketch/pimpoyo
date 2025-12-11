@@ -1,0 +1,10 @@
+{
+  "name": "Factura Rápida",
+  "short_name": "Factura Rápida",
+  "description": "Sistema de facturación rápido y eficiente",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb"
+}
+
