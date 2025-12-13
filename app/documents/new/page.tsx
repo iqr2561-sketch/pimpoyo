@@ -7,6 +7,8 @@ import { Header } from '@/components/layout/Header'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { DocumentForm } from '@/components/forms/DocumentForm'
 
+export const dynamic = 'force-dynamic'
+
 export default function NewDocument() {
   const { data: session, status } = useSession()
   const router = useRouter()

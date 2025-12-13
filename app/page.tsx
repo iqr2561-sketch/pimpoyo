@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 
+export const dynamic = 'force-dynamic'
+
 export default function Home() {
   const router = useRouter()
   const [isLogin, setIsLogin] = useState(true)
@@ -119,7 +121,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white overflow-hidden relative">
+    <div className="min-h-screen bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 text-white overflow-hidden relative">
       <div className="absolute inset-0">
         <div className="absolute -left-20 -top-20 w-96 h-96 bg-blue-600 opacity-30 blur-3xl animate-pulse" />
         <div className="absolute right-0 top-10 w-80 h-80 bg-purple-600 opacity-25 blur-3xl animate-[pulse_12s_ease-in-out_infinite]" />

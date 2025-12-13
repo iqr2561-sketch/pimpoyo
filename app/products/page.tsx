@@ -11,6 +11,8 @@ import { Input } from '@/components/ui/Input'
 import { formatCurrency } from '@/lib/utils'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 interface Product {
   id: string
   code: string

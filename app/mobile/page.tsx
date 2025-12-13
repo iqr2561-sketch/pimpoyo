@@ -10,6 +10,8 @@ import { formatCurrency } from '@/lib/utils'
 import Link from 'next/link'
 import { useToast } from '@/components/ui/Toast'
 
+export const dynamic = 'force-dynamic'
+
 interface Product {
   id: string
   code: string

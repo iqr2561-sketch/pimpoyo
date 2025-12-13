@@ -12,6 +12,8 @@ import { Card } from '@/components/ui/Card'
 import { formatCurrency } from '@/lib/utils'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 interface Document {
   id: string
   type: string

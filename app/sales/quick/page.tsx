@@ -14,6 +14,8 @@ import { DocumentForm } from '@/components/forms/DocumentForm'
 import { formatCurrency } from '@/lib/utils'
 import { useToast } from '@/components/ui/Toast'
 
+export const dynamic = 'force-dynamic'
+
 interface Product {
   id: string
   code: string
@@ -232,7 +234,7 @@ export default function QuickSalePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 text-white">
       <Header />
       <div className="flex">
         <Sidebar />

@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 
+export const dynamic = 'force-dynamic'
+
 export default function NewProduct() {
   const { data: session, status } = useSession()
   const router = useRouter()
