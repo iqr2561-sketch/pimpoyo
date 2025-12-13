@@ -22,36 +22,44 @@ model User {
 }
 
 model Company {
-  id          String    @id @default(cuid())
-  name        String
-  cuit        String    @unique
-  address     String?
-  phone       String?
-  email       String?
-  logoUrl     String?
-  users       User[]
-  clients     Client[]
-  documents   Document[]
-  products    Product[]
-  stock       Stock[]
-  sales       Sale[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id                String    @id @default(cuid())
+  name              String
+  cuit              String    @unique
+  address           String?
+  phone             String?
+  email             String?
+  logoUrl           String?
+  // Datos fiscales AFIP
+  puntoVenta        Int       @default(1)        // Punto de venta AFIP
+  condicionIVA      String    @default("RESPONSABLE_INSCRIPTO") // RESPONSABLE_INSCRIPTO, MONOTRIBUTO, EXENTO
+  ingresosBrutos    String?                     // Nro Ingresos Brutos
+  inicioActividad   DateTime?                   // Fecha inicio actividades
+  users             User[]
+  clients           Client[]
+  documents         Document[]
+  products          Product[]
+  stock             Stock[]
+  sales             Sale[]
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 }
 
 model Client {
-  id        String     @id @default(cuid())
-  name      String
-  cuit      String?
-  address   String?
-  phone     String?
-  email     String?
-  companyId String
-  company   Company    @relation(fields: [companyId], references: [id])
-  documents Document[]
-  sales     Sale[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id              String     @id @default(cuid())
+  name            String
+  cuit            String?
+  address         String?
+  phone           String?
+  email           String?
+  // Datos fiscales
+  condicionIVA    String     @default("CONSUMIDOR_FINAL") // RESPONSABLE_INSCRIPTO, MONOTRIBUTO, CONSUMIDOR_FINAL, EXENTO
+  tipoDocumento   String     @default("CUIT") // CUIT, CUIL, DNI, PASAPORTE
+  companyId       String
+  company         Company    @relation(fields: [companyId], references: [id])
+  documents       Document[]
+  sales           Sale[]
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 }
 
 model Product {
@@ -113,41 +121,52 @@ model DocumentItem {
 }
 
 model Document {
-  id          String   @id @default(cuid())
-  type        String   // INVOICE, REMITO, QUOTE
-  number      String   @unique
-  date        DateTime @default(now())
-  subtotal    Float
-  tax         Float    @default(0)
-  total       Float
-  status      String   @default("DRAFT") // DRAFT, SENT, PAID, CANCELLED
-  notes       String?
-  pdfUrl      String?
-  companyId   String
-  company     Company  @relation(fields: [companyId], references: [id])
-  clientId    String
-  client      Client   @relation(fields: [clientId], references: [id])
-  items       DocumentItem[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt()
+  id              String   @id @default(cuid())
+  type            String   // INVOICE, REMITO, QUOTE
+  number          String   @unique
+  date            DateTime @default(now())
+  subtotal        Float
+  tax             Float    @default(0)
+  total           Float
+  status          String   @default("DRAFT") // DRAFT, SENT, PAID, CANCELLED
+  notes           String?
+  pdfUrl          String?
+  // Datos AFIP
+  tipoFactura     String?  // A, B, C, E (factura electrónica)
+  puntoVenta      Int?     // Punto de venta AFIP
+  numeroFactura   Int?     // Número secuencial de factura
+  cae             String?  // Código de Autorización Electrónico
+  caeVencimiento  DateTime? // Fecha vencimiento CAE
+  qrData          String?  // Datos para QR de AFIP
+  companyId       String
+  company         Company  @relation(fields: [companyId], references: [id])
+  clientId        String
+  client          Client   @relation(fields: [clientId], references: [id])
+  items           DocumentItem[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt()
 }
 
 model Sale {
-  id          String     @id @default(cuid())
-  number      String     @unique
-  date        DateTime   @default(now())
-  subtotal    Float
-  tax         Float      @default(0)
-  total       Float
-  status      String     @default("PENDING") // PENDING, COMPLETED, CANCELLED
-  paymentMethod String?   // CASH, CARD, TRANSFER, etc.
-  clientId    String?
-  client      Client?    @relation(fields: [clientId], references: [id])
-  companyId   String
-  company     Company    @relation(fields: [companyId], references: [id])
-  items       SaleItem[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt()
+  id              String     @id @default(cuid())
+  number          String     @unique
+  date            DateTime   @default(now())
+  subtotal        Float
+  tax             Float      @default(0)
+  total           Float
+  status          String     @default("PENDING") // PENDING, COMPLETED, CANCELLED
+  paymentMethod   String?    // CASH, CARD, TRANSFER, etc.
+  // Datos AFIP (para generar factura después)
+  tipoFactura     String?    // A, B, C
+  facturaGenerada Boolean    @default(false) // Si ya se generó factura fiscal
+  facturaId       String?    // ID del documento fiscal generado
+  clientId        String?
+  client          Client?    @relation(fields: [clientId], references: [id])
+  companyId       String
+  company         Company    @relation(fields: [companyId], references: [id])
+  items           SaleItem[]
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt()
 }
 
 model SaleItem {
