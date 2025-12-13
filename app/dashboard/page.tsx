@@ -88,7 +88,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-100">
       <Header />
       <div className="flex">
         <Sidebar />
@@ -101,7 +101,7 @@ export default function Dashboard() {
                 <select
                   value={period}
                   onChange={(e) => setPeriod(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/90 text-center"
                 >
                   <option value="day">Hoy</option>
                   <option value="week">Esta Semana</option>

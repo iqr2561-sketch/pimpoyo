@@ -107,7 +107,7 @@ export function DocumentForm({ initialData, documentId }: DocumentFormProps) {
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-slate-300 cursor-pointer"
             >
               <option value="INVOICE">Factura</option>
               <option value="REMITO">Remito</option>
@@ -135,7 +135,7 @@ export function DocumentForm({ initialData, documentId }: DocumentFormProps) {
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={4}
-            className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-slate-300 resize-none"
             placeholder="Notas adicionales..."
           />
         </div>

@@ -168,10 +168,12 @@ export default function Home() {
             </div>
           </div>
 
-          <Card className="bg-white text-slate-900 shadow-2xl shadow-blue-900/30 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-transparent pointer-events-none" />
-            <div className="relative">
-              <div className="flex border-b border-slate-200 mb-6">
+          <Card className="bg-white/95 text-slate-900 shadow-[0_20px_60px_-28px_rgba(59,130,246,0.55)] border border-slate-200/80 relative overflow-hidden p-8 sm:p-10">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-indigo-50 pointer-events-none" />
+            <div className="absolute -right-16 -top-16 w-56 h-56 bg-blue-500/10 blur-3xl" />
+            <div className="absolute -left-20 bottom-0 w-64 h-64 bg-purple-500/10 blur-3xl" />
+            <div className="relative space-y-6">
+              <div className="flex border border-slate-200/70 rounded-full overflow-hidden bg-slate-100/80">
                 <button
                   type="button"
                   onClick={() => {
@@ -180,7 +182,9 @@ export default function Home() {
                     setSuccess('')
                   }}
                   className={`flex-1 py-3 text-center font-medium transition ${
-                    isLogin ? 'text-blue-600 border-b-2 border-blue-600' : 'text-slate-500'
+                    isLogin
+                      ? 'text-white bg-gradient-to-r from-blue-600 to-indigo-600 shadow-inner'
+                      : 'text-slate-600'
                   }`}
                 >
                   Iniciar Sesión
@@ -193,7 +197,9 @@ export default function Home() {
                     setSuccess('')
                   }}
                   className={`flex-1 py-3 text-center font-medium transition ${
-                    !isLogin ? 'text-blue-600 border-b-2 border-blue-600' : 'text-slate-500'
+                    !isLogin
+                      ? 'text-white bg-gradient-to-r from-blue-600 to-indigo-600 shadow-inner'
+                      : 'text-slate-600'
                   }`}
                 >
                   Registrarse

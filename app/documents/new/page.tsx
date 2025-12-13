@@ -30,15 +30,20 @@ export default function NewDocument() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <Header />
       <div className="flex">
         <Sidebar />
         <main className="flex-1 p-6">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Nuevo Documento
-            </h2>
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-slate-900 mb-2">
+                Nuevo Documento
+              </h2>
+              <p className="text-slate-600">
+                Completa el formulario para crear un nuevo documento fiscal
+              </p>
+            </div>
             <DocumentForm />
           </div>
         </main>

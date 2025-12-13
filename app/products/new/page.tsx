@@ -78,13 +78,18 @@ export default function NewProduct() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <Header />
       <div className="flex">
         <Sidebar />
         <main className="flex-1 p-6">
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Nuevo Producto</h2>
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-slate-900 mb-2">Nuevo Producto</h2>
+              <p className="text-slate-600">
+                Agrega un nuevo producto al inventario
+              </p>
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <Card>
@@ -136,7 +141,7 @@ export default function NewProduct() {
                     }
                   />
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-semibold text-slate-800 mb-1">
                       Unidad
                     </label>
                     <select
@@ -144,7 +149,7 @@ export default function NewProduct() {
                       onChange={(e) =>
                         setFormData({ ...formData, unit: e.target.value })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-slate-300 cursor-pointer"
                     >
                       <option value="UN">Unidad</option>
                       <option value="KG">Kilogramo</option>
