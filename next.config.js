@@ -10,19 +10,15 @@ const nextConfig = {
     }
     return config
   },
-  // DESHABILITAR COMPLETAMENTE LA GENERACIÓN ESTÁTICA
-  output: 'standalone',
+  // FORZAR RENDERIZADO DINÁMICO - NO STATIC
   experimental: {
     outputFileTracingIncludes: {
       '/api/**/*': ['./prisma/schema.prisma'],
     },
   },
-  // Configuración para build en Vercel
-  typescript: {
-    ignoreBuildErrors: false,
-  },
-  eslint: {
-    ignoreDuringBuilds: false,
+  // Deshabilitar generación estática completamente
+  generateBuildId: async () => {
+    return 'build-' + Date.now()
   },
 }
 
