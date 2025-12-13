@@ -228,11 +228,11 @@ export function DocumentPreview({ document }: DocumentPreviewProps) {
           fileName={`${document.number}.pdf`}
           className="inline-block"
         >
-          {({ blob, url, loading, error }) => (
+          {(({ loading }: any) => (
             <Button disabled={loading}>
               {loading ? 'Generando PDF...' : 'Descargar PDF'}
             </Button>
-          )}
+          )) as any}
         </PDFDownloadLink>
         {document.client.phone && (
           <Button variant="secondary" onClick={handleWhatsApp}>
