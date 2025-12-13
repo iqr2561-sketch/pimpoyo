@@ -6,6 +6,10 @@ import { ToastProvider } from '@/components/ui/Toast'
 
 const inter = Inter({ subsets: ['latin'] })
 
+// Forzar renderizado dinámico en toda la aplicación
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export const metadata: Metadata = {
   title: 'Factura Rápida',
   description: 'Sistema de facturación rápido y eficiente',

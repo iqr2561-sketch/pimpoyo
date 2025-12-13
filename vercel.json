@@ -1,4 +1,0 @@
-{
-  "buildCommand": "cp prisma/schema.prod.prisma prisma/schema.prisma && prisma generate && next build"
-}
-

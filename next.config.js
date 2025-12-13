@@ -10,11 +10,19 @@ const nextConfig = {
     }
     return config
   },
-  // Deshabilitar static optimization para páginas con autenticación
+  // DESHABILITAR COMPLETAMENTE LA GENERACIÓN ESTÁTICA
+  output: 'standalone',
   experimental: {
     outputFileTracingIncludes: {
       '/api/**/*': ['./prisma/schema.prisma'],
     },
+  },
+  // Configuración para build en Vercel
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  eslint: {
+    ignoreDuringBuilds: false,
   },
 }
 
