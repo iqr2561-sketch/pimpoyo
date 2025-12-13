@@ -1,7 +1,4 @@
 {
-  "buildCommand": "prisma generate && next build",
-  "env": {
-    "SKIP_ENV_VALIDATION": "1"
-  }
+  "buildCommand": "cp prisma/schema.prod.prisma prisma/schema.prisma && prisma generate && next build"
 }
 

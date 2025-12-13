@@ -1,12 +1,12 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// Schema para PRODUCCIÓN (PostgreSQL)
+// Este archivo se usa automáticamente en Vercel
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -60,9 +60,9 @@ model Product {
   name        String
   description String?
   price       Float
-  cost        Float?   // Costo de compra
+  cost        Float?
   category    String?
-  unit        String   @default("UN") // UN, KG, L, etc.
+  unit        String   @default("UN")
   companyId   String
   company     Company  @relation(fields: [companyId], references: [id])
   stock       Stock?
@@ -77,9 +77,9 @@ model Stock {
   productId   String   @unique
   product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   quantity    Float    @default(0)
-  minQuantity Float    @default(0) // Stock mínimo
-  maxQuantity Float?   // Stock máximo
-  location    String?  // Ubicación en almacén
+  minQuantity Float    @default(0)
+  maxQuantity Float?
+  location    String?
   companyId   String
   company     Company  @relation(fields: [companyId], references: [id])
   movements   StockMovement[]
@@ -91,10 +91,10 @@ model StockMovement {
   id          String   @id @default(cuid())
   stockId     String
   stock       Stock    @relation(fields: [stockId], references: [id], onDelete: Cascade)
-  type        String   // IN, OUT, ADJUSTMENT
+  type        String
   quantity    Float
-  reason      String?  // Motivo del movimiento
-  reference   String?  // Referencia (ID de venta, compra, etc.)
+  reason      String?
+  reference   String?
   userId      String?
   createdAt   DateTime @default(now())
 }
@@ -104,7 +104,7 @@ model DocumentItem {
   description  String
   quantity     Float
   unitPrice    Float
-  productId    String?   // Opcional: relacionado con producto
+  productId    String?
   product      Product?  @relation(fields: [productId], references: [id])
   documentId   String
   document     Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
@@ -114,13 +114,13 @@ model DocumentItem {
 
 model Document {
   id          String   @id @default(cuid())
-  type        String   // INVOICE, REMITO, QUOTE
+  type        String
   number      String   @unique
   date        DateTime @default(now())
   subtotal    Float
   tax         Float    @default(0)
   total       Float
-  status      String   @default("DRAFT") // DRAFT, SENT, PAID, CANCELLED
+  status      String   @default("DRAFT")
   notes       String?
   pdfUrl      String?
   companyId   String
@@ -139,8 +139,8 @@ model Sale {
   subtotal    Float
   tax         Float      @default(0)
   total       Float
-  status      String     @default("PENDING") // PENDING, COMPLETED, CANCELLED
-  paymentMethod String?   // CASH, CARD, TRANSFER, etc.
+  status      String     @default("PENDING")
+  paymentMethod String?
   clientId    String?
   client      Client?    @relation(fields: [clientId], references: [id])
   companyId   String
