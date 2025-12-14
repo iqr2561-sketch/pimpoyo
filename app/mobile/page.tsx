@@ -6,11 +6,10 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
+import { ClientSelector } from '@/components/forms/ClientSelector'
 import { formatCurrency } from '@/lib/utils'
 import Link from 'next/link'
 import { useToast } from '@/components/ui/Toast'
-
-export const dynamic = 'force-dynamic'
 
 interface Product {
   id: string
@@ -30,8 +29,10 @@ export default function MobilePage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [cart, setCart] = useState<Array<{ product: Product; quantity: number }>>([])
   const [clientId, setClientId] = useState('')
+  const [selectedClient, setSelectedClient] = useState<any>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [showCart, setShowCart] = useState(false)
+  const [showClientSelector, setShowClientSelector] = useState(false)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -115,6 +116,8 @@ export default function MobilePage() {
         toast('Venta realizada exitosamente', 'success')
         setCart([])
         setClientId('')
+        setSelectedClient(null)
+        setShowClientSelector(false)
         fetchProducts() // Actualizar stock
       } else {
         const error = await response.json()
@@ -175,6 +178,55 @@ export default function MobilePage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="shadow-md"
           />
+          
+          {/* Selector de Cliente */}
+          <div className="mt-3">
+            <button
+              onClick={() => setShowClientSelector(!showClientSelector)}
+              className="w-full bg-white/20 hover:bg-white/30 text-white rounded-lg px-4 py-2.5 flex items-center justify-between transition-all shadow-md"
+            >
+              <span className="flex items-center gap-2 text-sm font-semibold">
+                {selectedClient ? (
+                  <>
+                    <span className="text-lg">✓</span>
+                    <span>Cliente: {selectedClient.name}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-lg">👤</span>
+                    <span>Seleccionar Cliente (opcional)</span>
+                  </>
+                )}
+              </span>
+              <span className="text-xl">{showClientSelector ? '▼' : '▶'}</span>
+            </button>
+            
+            {showClientSelector && session?.user?.companyId && (
+              <div className="mt-2 bg-white rounded-lg shadow-xl p-3">
+                <ClientSelector
+                  value={clientId}
+                  onChange={(id, client) => {
+                    setClientId(id)
+                    setSelectedClient(client)
+                    setShowClientSelector(false)
+                  }}
+                  companyId={session.user.companyId}
+                />
+                {clientId && (
+                  <button
+                    onClick={() => {
+                      setClientId('')
+                      setSelectedClient(null)
+                      setShowClientSelector(false)
+                    }}
+                    className="mt-2 w-full text-xs text-red-600 hover:text-red-700 font-semibold bg-red-50 py-2 rounded-lg"
+                  >
+                    ✕ Quitar cliente
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
