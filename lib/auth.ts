@@ -1,10 +1,24 @@
 // Sistema de autenticación simple para desarrollo
 
 const AUTH_KEY = 'app-auth'
-const DEV_CREDENTIALS = {
-  username: 'admin',
-  password: '1234',
+
+// Credenciales de acceso rápido - pueden ser configuradas via variables de entorno
+const getCredentials = () => {
+  if (typeof window !== 'undefined') {
+    // En el cliente, usar variables de entorno o valores por defecto
+    return {
+      username: process.env.NEXT_PUBLIC_AUTH_USERNAME || 'admin',
+      password: process.env.NEXT_PUBLIC_AUTH_PASSWORD || '1234',
+    }
+  }
+  // En el servidor durante el build, usar valores por defecto
+  return {
+    username: 'admin',
+    password: '1234',
+  }
 }
+
+const DEV_CREDENTIALS = getCredentials()
 
 export interface AuthUser {
   username: string
