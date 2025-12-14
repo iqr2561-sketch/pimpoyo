@@ -1,10 +1,20 @@
 {
-  "name": "Factura Rápida",
-  "short_name": "Factura Rápida",
-  "description": "Sistema de facturación rápido y eficiente",
-  "start_url": "/",
+  "name": "Venta Rápida - Pimpoyo",
+  "short_name": "Venta Rápida",
+  "description": "Sistema de venta y facturación móvil rápido",
+  "start_url": "/mobile",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#2563eb"
+  "background_color": "#4f46e5",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }
 

@@ -159,16 +159,16 @@ export default function Home() {
             <div className="flex flex-wrap gap-3">
               <Button 
                 variant="secondary" 
-                onClick={() => router.push('/mobile')}
+                onClick={() => window.location.href = '/mobile'}
               >
-                Ir a venta móvil
+                📱 Ir a venta móvil
               </Button>
               <Button 
                 variant="ghost" 
                 className="border border-white/20 hover:border-white/40"
-                onClick={() => router.push('/dashboard')}
+                onClick={() => window.location.href = '/dashboard'}
               >
-                Ver panel (requiere sesión)
+                🏠 Ver panel (requiere sesión)
               </Button>
             </div>
           </div>
