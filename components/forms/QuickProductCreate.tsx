@@ -46,7 +46,13 @@ export function QuickProductCreate({
       if (response.ok) {
         const product = await response.json()
         onProductCreated(product)
-        setFormData({ code: '', name: '', price: '', initialStock: '0' })
+        setFormData({
+          code: '',
+          barcode: '',
+          name: '',
+          price: '',
+          initialStock: '0',
+        })
       } else {
         const error = await response.json()
         alert(error.error || 'Error al crear producto')
