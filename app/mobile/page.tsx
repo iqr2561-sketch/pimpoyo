@@ -35,10 +35,9 @@ export default function MobilePage() {
   const [showClientSelector, setShowClientSelector] = useState(false)
 
   useEffect(() => {
-    if (status === 'authenticated') {
-      fetchProducts()
-    }
-  }, [status])
+    // Cargar productos siempre, sin requerir sesión
+    fetchProducts()
+  }, [])
 
   const fetchProducts = async () => {
     try {
@@ -139,38 +138,7 @@ export default function MobilePage() {
       p.code.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100">
-        <div className="text-xl font-semibold text-slate-700">Cargando...</div>
-      </div>
-    )
-  }
-
-  if (status === 'unauthenticated') {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-indigo-600 to-blue-600 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center">
-          <div className="text-6xl mb-4">📱</div>
-          <h1 className="text-3xl font-black text-slate-900 mb-3">
-            Venta Rápida Móvil
-          </h1>
-          <p className="text-slate-600 mb-6">
-            Para usar la venta rápida móvil, inicia sesión primero.
-          </p>
-          <Button
-            className="w-full text-lg py-4"
-            onClick={() => window.location.href = '/'}
-          >
-            🔐 Iniciar Sesión
-          </Button>
-          <p className="text-xs text-slate-500 mt-4">
-            ¿Primera vez? Puedes registrarte desde la página principal
-          </p>
-        </div>
-      </div>
-    )
-  }
+  // Sin verificación de sesión - acceso libre
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 pb-24">
@@ -217,29 +185,17 @@ export default function MobilePage() {
               <span className="text-xl">{showClientSelector ? '▼' : '▶'}</span>
             </button>
             
-            {showClientSelector && session?.user?.companyId && (
+            {showClientSelector && (
               <div className="mt-2 bg-white rounded-lg shadow-xl p-3">
-                <ClientSelector
-                  value={clientId}
-                  onChange={(id, client) => {
-                    setClientId(id)
-                    setSelectedClient(client)
-                    setShowClientSelector(false)
-                  }}
-                  companyId={session.user.companyId}
-                />
-                {clientId && (
-                  <button
-                    onClick={() => {
-                      setClientId('')
-                      setSelectedClient(null)
-                      setShowClientSelector(false)
-                    }}
-                    className="mt-2 w-full text-xs text-red-600 hover:text-red-700 font-semibold bg-red-50 py-2 rounded-lg"
-                  >
-                    ✕ Quitar cliente
-                  </button>
-                )}
+                <p className="text-sm text-slate-600 mb-2">
+                  Selección de cliente temporalmente deshabilitada (modo demo)
+                </p>
+                <button
+                  onClick={() => setShowClientSelector(false)}
+                  className="w-full text-xs text-slate-600 hover:text-slate-700 font-semibold bg-slate-100 py-2 rounded-lg"
+                >
+                  ✕ Cerrar
+                </button>
               </div>
             )}
           </div>

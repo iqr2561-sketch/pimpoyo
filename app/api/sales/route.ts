@@ -8,8 +8,16 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session?.user?.companyId) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    // Modo demo: usar primera empresa si no hay sesión
+    let companyId = session?.user?.companyId
+    
+    if (!companyId) {
+      const firstCompany = await prisma.company.findFirst()
+      companyId = firstCompany?.id
+    }
+
+    if (!companyId) {
+      return NextResponse.json({ error: 'No hay empresas registradas' }, { status: 404 })
     }
 
     const searchParams = request.nextUrl.searchParams
@@ -18,7 +26,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status')
 
     const where: any = {
-      companyId: session.user.companyId,
+      companyId: companyId,
     }
 
     if (startDate || endDate) {
@@ -60,8 +68,16 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session?.user?.companyId) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    // Modo demo: usar primera empresa si no hay sesión
+    let companyId = session?.user?.companyId
+    
+    if (!companyId) {
+      const firstCompany = await prisma.company.findFirst()
+      companyId = firstCompany?.id
+    }
+
+    if (!companyId) {
+      return NextResponse.json({ error: 'No hay empresas registradas' }, { status: 404 })
     }
 
     const body = await request.json()
@@ -116,7 +132,7 @@ export async function POST(request: NextRequest) {
       data: {
         number: generateDocumentNumber('SALE'),
         clientId,
-        companyId: session.user.companyId,
+        companyId: companyId,
         subtotal,
         tax,
         total,
