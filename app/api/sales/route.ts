@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
         include: { stock: true },
       })
 
-      if (!product || product.companyId !== session.user.companyId) {
+      if (!product || product.companyId !== companyId) {
         return NextResponse.json(
           { error: `Producto ${item.productId} no encontrado` },
           { status: 400 }
