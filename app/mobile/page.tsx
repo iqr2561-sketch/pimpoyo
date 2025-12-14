@@ -93,7 +93,7 @@ export default function MobilePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           items,
-          clientId: clientId || null,
+          clientId: null, // Modo laboratorio - sin cliente
           paymentMethod: 'CASH',
         }),
       })
