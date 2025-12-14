@@ -35,15 +35,10 @@ export default function MobilePage() {
   const [showClientSelector, setShowClientSelector] = useState(false)
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/')
-      return
-    }
-
     if (status === 'authenticated') {
       fetchProducts()
     }
-  }, [status, router])
+  }, [status])
 
   const fetchProducts = async () => {
     try {
@@ -146,14 +141,35 @@ export default function MobilePage() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div>Cargando...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100">
+        <div className="text-xl font-semibold text-slate-700">Cargando...</div>
       </div>
     )
   }
 
   if (status === 'unauthenticated') {
-    return null
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-indigo-600 to-blue-600 flex items-center justify-center p-4">
+        <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center">
+          <div className="text-6xl mb-4">📱</div>
+          <h1 className="text-3xl font-black text-slate-900 mb-3">
+            Venta Rápida Móvil
+          </h1>
+          <p className="text-slate-600 mb-6">
+            Para usar la venta rápida móvil, inicia sesión primero.
+          </p>
+          <Button
+            className="w-full text-lg py-4"
+            onClick={() => window.location.href = '/'}
+          >
+            🔐 Iniciar Sesión
+          </Button>
+          <p className="text-xs text-slate-500 mt-4">
+            ¿Primera vez? Puedes registrarte desde la página principal
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (
