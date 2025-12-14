@@ -65,6 +65,7 @@ model Client {
 model Product {
   id          String   @id @default(cuid())
   code        String   @unique
+  barcode     String?  @unique // Código de barras para escaneo
   name        String
   description String?
   price       Float
