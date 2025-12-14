@@ -9,8 +9,6 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { formatCurrency } from '@/lib/utils'
 
-export const dynamic = 'force-dynamic'
-
 interface Product {
   id: string
   code: string
@@ -459,7 +457,7 @@ export default function TPVPage() {
                   </>
                 )}
               </div>
-            </Card>
+            </div>
           </div>
         </div>
       </div>
