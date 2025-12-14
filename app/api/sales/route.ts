@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
                 quantity: item.quantity,
                 reason: 'Venta',
                 reference: sale.id,
-                userId: session.user.id,
+                userId: session?.user?.id || null,
               },
             },
           },
