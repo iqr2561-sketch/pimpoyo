@@ -90,29 +90,113 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <Header />
       <div className="flex">
         <Sidebar />
         <main className="flex-1 p-6">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
+            <div className="mb-8">
+              <h1 className="text-4xl font-black text-white mb-2">Panel de Control</h1>
+              <p className="text-slate-300 text-lg">
+                Accesos rápidos y resumen de tu negocio
+              </p>
+            </div>
+
+            {/* Botones de Acceso Rápido - Tipo Imagen del Usuario */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {/* TPV Profesional */}
+              <Link href="/tpv">
+                <div className="group relative bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600 rounded-3xl p-8 shadow-2xl hover:shadow-emerald-500/50 transition-all duration-300 hover:scale-105 cursor-pointer border-4 border-emerald-300/50 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative z-10">
+                    <div className="text-sm font-bold text-emerald-100 mb-2 uppercase tracking-wider">
+                      Venta rápida
+                    </div>
+                    <h3 className="text-3xl font-black text-white mb-3 leading-tight">
+                      Carrito táctil
+                    </h3>
+                    <p className="text-emerald-50 text-sm font-medium">
+                      Busca, suma y cobra en segundos.
+                    </p>
+                  </div>
+                  <div className="absolute -bottom-6 -right-6 text-white/10 text-9xl">💳</div>
+                </div>
+              </Link>
+
+              {/* Facturar/Remito */}
+              <Link href="/documents/new">
+                <div className="group relative bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-3xl p-8 shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105 cursor-pointer border-4 border-blue-300/50 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative z-10">
+                    <div className="text-sm font-bold text-blue-100 mb-2 uppercase tracking-wider">
+                      Documentos
+                    </div>
+                    <h3 className="text-3xl font-black text-white mb-3 leading-tight">
+                      Factura / Remito
+                    </h3>
+                    <p className="text-blue-50 text-sm font-medium">
+                      IVA, notas y PDF listos.
+                    </p>
+                  </div>
+                  <div className="absolute -bottom-6 -right-6 text-white/10 text-9xl">📄</div>
+                </div>
+              </Link>
+
+              {/* Clientes */}
+              <Link href="/clients">
+                <div className="group relative bg-gradient-to-br from-cyan-500 via-teal-500 to-cyan-600 rounded-3xl p-8 shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300 hover:scale-105 cursor-pointer border-4 border-cyan-300/50 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative z-10">
+                    <div className="text-sm font-bold text-cyan-100 mb-2 uppercase tracking-wider">
+                      Clientes
+                    </div>
+                    <h3 className="text-3xl font-black text-white mb-3 leading-tight">
+                      Ctas. Corrientes
+                    </h3>
+                    <p className="text-cyan-50 text-sm font-medium">
+                      Alta rápida y búsqueda.
+                    </p>
+                  </div>
+                  <div className="absolute -bottom-6 -right-6 text-white/10 text-9xl">👥</div>
+                </div>
+              </Link>
+
+              {/* Ventas */}
+              <Link href="/sales">
+                <div className="group relative bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 rounded-3xl p-8 shadow-2xl hover:shadow-amber-500/50 transition-all duration-300 hover:scale-105 cursor-pointer border-4 border-amber-300/50 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative z-10">
+                    <div className="text-sm font-bold text-amber-100 mb-2 uppercase tracking-wider">
+                      Accesos
+                    </div>
+                    <h3 className="text-3xl font-black text-white mb-3 leading-tight">
+                      Atajos
+                    </h3>
+                    <p className="text-amber-50 text-sm font-medium">
+                      Documentos y panel.
+                    </p>
+                  </div>
+                  <div className="absolute -bottom-6 -right-6 text-white/10 text-9xl">📊</div>
+                </div>
+              </Link>
+            </div>
+
+            {/* Header de Estadísticas */}
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Panel de Control</h2>
+              <h2 className="text-2xl font-bold text-white">Estadísticas del Negocio</h2>
               <div className="flex gap-2">
                 <select
                   value={period}
                   onChange={(e) => setPeriod(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/90 text-center"
+                  className="px-3 py-2 border border-slate-600 bg-slate-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="day">Hoy</option>
                   <option value="week">Esta Semana</option>
                   <option value="month">Este Mes</option>
                   <option value="year">Este Año</option>
                 </select>
-                <Link href="/documents/new">
-                  <Button>Nuevo Documento</Button>
-                </Link>
               </div>
             </div>
 
