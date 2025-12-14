@@ -55,16 +55,8 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
 
-    // Modo demo: usar primera empresa si no hay sesión
-    let companyId = session?.user?.companyId
-    
-    if (!companyId) {
-      const firstCompany = await prisma.company.findFirst()
-      companyId = firstCompany?.id
-    }
-
-    if (!companyId) {
-      return NextResponse.json({ error: 'No hay empresas registradas' }, { status: 404 })
+    if (!session?.user?.companyId) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
 
     const body = await request.json()
@@ -99,14 +91,14 @@ export async function POST(request: NextRequest) {
         cost,
         category,
         unit: unit || 'UN',
-        companyId: companyId,
+        companyId: session.user.companyId,
         stock: {
           create: {
             quantity: initialStock || 0,
             minQuantity: minQuantity || 0,
             maxQuantity,
             location,
-            companyId: companyId,
+            companyId: session.user.companyId,
           },
         },
       },
