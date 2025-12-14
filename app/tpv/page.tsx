@@ -178,31 +178,31 @@ export default function TPVPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <Header />
       
-      {/* TPV Header */}
-      <div className="bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 shadow-2xl border-b-4 border-emerald-400">
-        <div className="max-w-[1920px] mx-auto px-6 py-4">
+      {/* TPV Header - Compacto */}
+      <div className="bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 shadow-xl border-b-2 border-emerald-400">
+        <div className="max-w-[1920px] mx-auto px-4 py-2.5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg">
-                <span className="text-4xl">💳</span>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-md">
+                <span className="text-2xl">💳</span>
               </div>
               <div>
-                <h1 className="text-3xl font-black text-white tracking-tight">
+                <h1 className="text-xl font-black text-white tracking-tight">
                   TERMINAL PUNTO DE VENTA
                 </h1>
-                <p className="text-emerald-100 text-sm font-medium">
+                <p className="text-emerald-100 text-xs font-medium">
                   Sistema de cobro profesional • Rápido y confiable
                 </p>
               </div>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               <Link href="/sales">
-                <Button variant="outline" className="bg-white/20 border-white/40 text-white hover:bg-white/30">
+                <Button size="sm" variant="outline" className="bg-white/20 border-white/40 text-white hover:bg-white/30 text-xs">
                   📊 Ventas
                 </Button>
               </Link>
               <Link href="/dashboard">
-                <Button variant="outline" className="bg-white/20 border-white/40 text-white hover:bg-white/30">
+                <Button size="sm" variant="outline" className="bg-white/20 border-white/40 text-white hover:bg-white/30 text-xs">
                   🏠 Dashboard
                 </Button>
               </Link>
@@ -211,32 +211,32 @@ export default function TPVPage() {
         </div>
       </div>
 
-      <div className="max-w-[1920px] mx-auto p-6">
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="max-w-[1920px] mx-auto p-3">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-3">
           {/* Panel de Productos (izquierda - 2/3) */}
-          <div className="xl:col-span-2 space-y-4">
+          <div className="xl:col-span-2 space-y-3">
             {/* Buscador */}
-            <Card className="bg-white shadow-xl">
+            <div className="bg-white rounded-xl shadow-lg p-3">
               <input
                 type="text"
                 placeholder="🔍 Buscar por nombre o código del producto..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full text-xl px-4 py-4 border-2 border-slate-200 rounded-xl focus:border-emerald-500 focus:outline-none font-medium"
+                className="w-full text-base px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:border-emerald-500 focus:outline-none"
                 autoFocus
               />
-            </Card>
+            </div>
 
             {/* Categorías */}
-            <Card className="bg-white shadow-xl">
-              <div className="flex flex-wrap gap-2">
+            <div className="bg-white rounded-xl shadow-lg p-2">
+              <div className="flex flex-wrap gap-1.5">
                 {categories.map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`px-6 py-3 rounded-xl font-bold text-sm transition-all ${
+                    className={`px-4 py-2 rounded-lg font-bold text-xs transition-all ${
                       selectedCategory === cat
-                        ? 'bg-gradient-to-r from-emerald-500 to-green-500 text-white shadow-lg scale-105'
+                        ? 'bg-gradient-to-r from-emerald-500 to-green-500 text-white shadow-md scale-105'
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -244,10 +244,10 @@ export default function TPVPage() {
                   </button>
                 ))}
               </div>
-            </Card>
+            </div>
 
             {/* Grid de Productos */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-h-[calc(100vh-400px)] overflow-y-auto p-2">
+            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 max-h-[calc(100vh-280px)] overflow-y-auto p-1">
               {filteredProducts.map((product) => {
                 const stockQty = product.stock?.quantity || 0
                 const inCart = cart.find((item) => item.product.id === product.id)
@@ -258,42 +258,40 @@ export default function TPVPage() {
                     key={product.id}
                     onClick={() => addToCart(product)}
                     disabled={stockQty <= inCartQty}
-                    className={`relative bg-gradient-to-br from-white to-slate-50 rounded-2xl p-5 shadow-lg border-2 transition-all duration-200 text-left ${
+                    className={`relative bg-gradient-to-br from-white to-slate-50 rounded-xl p-3 shadow-md border-2 transition-all duration-150 text-left ${
                       stockQty <= inCartQty
                         ? 'opacity-50 cursor-not-allowed border-slate-200'
-                        : 'border-emerald-200 hover:border-emerald-400 hover:shadow-2xl hover:scale-105 cursor-pointer active:scale-95'
+                        : 'border-emerald-200 hover:border-emerald-400 hover:shadow-xl hover:scale-105 cursor-pointer active:scale-95'
                     }`}
                   >
                     {inCartQty > 0 && (
-                      <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 text-white rounded-full flex items-center justify-center font-black text-lg shadow-lg animate-pulse">
+                      <div className="absolute -top-1.5 -right-1.5 w-7 h-7 bg-gradient-to-br from-red-500 to-pink-500 text-white rounded-full flex items-center justify-center font-black text-sm shadow-md animate-pulse">
                         {inCartQty}
                       </div>
                     )}
                     
-                    <div className="space-y-2">
-                      <div className="flex items-start justify-between gap-2">
-                        <h3 className="font-bold text-base text-slate-900 leading-tight line-clamp-2">
-                          {product.name}
-                        </h3>
-                      </div>
+                    <div className="space-y-1.5">
+                      <h3 className="font-bold text-xs text-slate-900 leading-tight line-clamp-2 min-h-[32px]">
+                        {product.name}
+                      </h3>
                       
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs px-2 py-1 rounded-full bg-slate-200 text-slate-600 font-medium">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 text-slate-600 font-medium inline-block w-fit">
                           {product.code}
                         </span>
-                        <span className={`text-xs px-2 py-1 rounded-full font-bold ${
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold inline-block w-fit ${
                           stockQty > 10
                             ? 'bg-emerald-100 text-emerald-700'
                             : stockQty > 0
                             ? 'bg-amber-100 text-amber-700'
                             : 'bg-red-100 text-red-700'
                         }`}>
-                          Stock: {stockQty}
+                          {stockQty}
                         </span>
                       </div>
 
-                      <div className="pt-2 border-t border-slate-200">
-                        <p className="text-2xl font-black text-emerald-600">
+                      <div className="pt-1.5 border-t border-slate-200">
+                        <p className="text-base font-black text-emerald-600">
                           {formatCurrency(product.price)}
                         </p>
                       </div>
@@ -314,15 +312,15 @@ export default function TPVPage() {
           </div>
 
           {/* Carrito (derecha - 1/3) */}
-          <div className="space-y-4">
-            <Card className="bg-gradient-to-br from-slate-800 to-slate-900 text-white shadow-2xl border-4 border-slate-700 sticky top-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between pb-4 border-b border-white/20">
-                  <h2 className="text-2xl font-black">🛒 CARRITO</h2>
+          <div className="space-y-3">
+            <div className="bg-gradient-to-br from-slate-800 to-slate-900 text-white shadow-xl border-2 border-slate-700 rounded-xl p-4 sticky top-3">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-white/20">
+                  <h2 className="text-xl font-black">🛒 CARRITO</h2>
                   {cart.length > 0 && (
                     <button
                       onClick={clearCart}
-                      className="text-sm px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg font-semibold transition"
+                      className="text-xs px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg font-semibold transition"
                     >
                       🗑️ Limpiar
                     </button>
@@ -330,58 +328,58 @@ export default function TPVPage() {
                 </div>
 
                 {/* Items del Carrito */}
-                <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                <div className="space-y-2 max-h-[calc(100vh-380px)] overflow-y-auto">
                   {cart.length === 0 ? (
-                    <div className="text-center py-12">
-                      <div className="text-6xl mb-3">🛒</div>
-                      <p className="text-slate-400">Carrito vacío</p>
+                    <div className="text-center py-8">
+                      <div className="text-4xl mb-2">🛒</div>
+                      <p className="text-slate-400 text-sm">Carrito vacío</p>
                     </div>
                   ) : (
                     cart.map((item) => (
                       <div
                         key={item.product.id}
-                        className="bg-white/10 rounded-xl p-4 space-y-3 border border-white/10"
+                        className="bg-white/10 rounded-lg p-3 space-y-2 border border-white/10"
                       >
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <h3 className="font-bold text-white text-sm">
+                        <div className="flex justify-between items-start gap-2">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-white text-xs line-clamp-1">
                               {item.product.name}
                             </h3>
-                            <p className="text-emerald-300 font-bold text-lg">
+                            <p className="text-emerald-300 font-bold text-sm">
                               {formatCurrency(item.product.price)}
                             </p>
                           </div>
                           <button
                             onClick={() => removeFromCart(item.product.id)}
-                            className="text-red-400 hover:text-red-300 text-xl font-bold ml-2"
+                            className="text-red-400 hover:text-red-300 text-lg font-bold flex-shrink-0"
                           >
                             ✕
                           </button>
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5">
                           <button
                             onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                            className="w-10 h-10 bg-red-500 hover:bg-red-600 rounded-lg font-bold text-xl flex items-center justify-center transition active:scale-95"
+                            className="w-8 h-8 bg-red-500 hover:bg-red-600 rounded-lg font-bold text-lg flex items-center justify-center transition active:scale-95"
                           >
                             −
                           </button>
                           <div className="flex-1 text-center">
-                            <div className="bg-white/20 rounded-lg py-2 font-black text-2xl">
+                            <div className="bg-white/20 rounded-lg py-1.5 font-black text-xl">
                               {item.quantity}
                             </div>
                           </div>
                           <button
                             onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                            className="w-10 h-10 bg-emerald-500 hover:bg-emerald-600 rounded-lg font-bold text-xl flex items-center justify-center transition active:scale-95"
+                            className="w-8 h-8 bg-emerald-500 hover:bg-emerald-600 rounded-lg font-bold text-lg flex items-center justify-center transition active:scale-95"
                           >
                             +
                           </button>
                         </div>
 
-                        <div className="pt-2 border-t border-white/20 flex justify-between items-center">
-                          <span className="text-slate-300 text-sm">Subtotal:</span>
-                          <span className="text-xl font-black text-white">
+                        <div className="pt-1.5 border-t border-white/20 flex justify-between items-center">
+                          <span className="text-slate-300 text-xs">Subtotal:</span>
+                          <span className="text-base font-black text-white">
                             {formatCurrency(item.product.price * item.quantity)}
                           </span>
                         </div>
@@ -393,16 +391,16 @@ export default function TPVPage() {
                 {/* Total */}
                 {cart.length > 0 && (
                   <>
-                    <div className="pt-4 border-t-4 border-emerald-500 space-y-2">
+                    <div className="pt-3 border-t-2 border-emerald-500 space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-slate-300 text-lg">Items:</span>
-                        <span className="text-2xl font-bold">
+                        <span className="text-slate-300 text-sm">Items:</span>
+                        <span className="text-lg font-bold">
                           {cart.reduce((sum, item) => sum + item.quantity, 0)}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center bg-emerald-500/20 rounded-xl p-4">
-                        <span className="text-2xl font-black text-emerald-300">TOTAL:</span>
-                        <span className="text-4xl font-black text-white">
+                      <div className="flex justify-between items-center bg-emerald-500/20 rounded-lg p-3">
+                        <span className="text-lg font-black text-emerald-300">TOTAL:</span>
+                        <span className="text-2xl font-black text-white">
                           {formatCurrency(total)}
                         </span>
                       </div>
@@ -411,7 +409,7 @@ export default function TPVPage() {
                     <button
                       onClick={handleFinalizeSale}
                       disabled={isProcessing}
-                      className="w-full py-6 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white rounded-2xl font-black text-2xl shadow-2xl hover:shadow-emerald-500/50 transition-all duration-200 active:scale-95 disabled:opacity-50"
+                      className="w-full py-4 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white rounded-xl font-black text-xl shadow-xl hover:shadow-emerald-500/50 transition-all duration-200 active:scale-95 disabled:opacity-50"
                     >
                       {isProcessing ? '⏳ PROCESANDO...' : '💰 COBRAR'}
                     </button>
