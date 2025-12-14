@@ -1,12 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
-import { ClientSelector } from '@/components/forms/ClientSelector'
 import { formatCurrency } from '@/lib/utils'
 import Link from 'next/link'
 import { useToast } from '@/components/ui/Toast'
@@ -22,17 +19,12 @@ interface Product {
 }
 
 export default function MobilePage() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
   const { toast } = useToast()
   const [products, setProducts] = useState<Product[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [cart, setCart] = useState<Array<{ product: Product; quantity: number }>>([])
-  const [clientId, setClientId] = useState('')
-  const [selectedClient, setSelectedClient] = useState<any>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [showCart, setShowCart] = useState(false)
-  const [showClientSelector, setShowClientSelector] = useState(false)
 
   useEffect(() => {
     // Cargar productos siempre, sin requerir sesión
@@ -109,9 +101,6 @@ export default function MobilePage() {
       if (response.ok) {
         toast('Venta realizada exitosamente', 'success')
         setCart([])
-        setClientId('')
-        setSelectedClient(null)
-        setShowClientSelector(false)
         fetchProducts() // Actualizar stock
       } else {
         const error = await response.json()
@@ -145,14 +134,20 @@ export default function MobilePage() {
       {/* Header */}
       <div className="bg-gradient-to-r from-indigo-600 to-blue-600 shadow-lg sticky top-0 z-10">
         <div className="p-4">
+          {/* Banner Modo Laboratorio */}
+          <div className="mb-3 bg-yellow-400 text-yellow-900 px-3 py-2 rounded-lg flex items-center gap-2 text-sm font-bold">
+            <span className="text-lg">🧪</span>
+            <span>MODO LABORATORIO - Sin autenticación</span>
+          </div>
+          
           <div className="flex justify-between items-center mb-4">
             <div>
               <h1 className="text-xl font-bold text-white">Venta Rápida</h1>
               <p className="text-xs text-indigo-100">Modo móvil optimizado</p>
             </div>
-            <Link href="/dashboard">
+            <Link href="/">
               <Button variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-white/30">
-                ← Volver
+                ← Inicio
               </Button>
             </Link>
           </div>
@@ -162,43 +157,6 @@ export default function MobilePage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="shadow-md"
           />
-          
-          {/* Selector de Cliente */}
-          <div className="mt-3">
-            <button
-              onClick={() => setShowClientSelector(!showClientSelector)}
-              className="w-full bg-white/20 hover:bg-white/30 text-white rounded-lg px-4 py-2.5 flex items-center justify-between transition-all shadow-md"
-            >
-              <span className="flex items-center gap-2 text-sm font-semibold">
-                {selectedClient ? (
-                  <>
-                    <span className="text-lg">✓</span>
-                    <span>Cliente: {selectedClient.name}</span>
-                  </>
-                ) : (
-                  <>
-                    <span className="text-lg">👤</span>
-                    <span>Seleccionar Cliente (opcional)</span>
-                  </>
-                )}
-              </span>
-              <span className="text-xl">{showClientSelector ? '▼' : '▶'}</span>
-            </button>
-            
-            {showClientSelector && (
-              <div className="mt-2 bg-white rounded-lg shadow-xl p-3">
-                <p className="text-sm text-slate-600 mb-2">
-                  Selección de cliente temporalmente deshabilitada (modo demo)
-                </p>
-                <button
-                  onClick={() => setShowClientSelector(false)}
-                  className="w-full text-xs text-slate-600 hover:text-slate-700 font-semibold bg-slate-100 py-2 rounded-lg"
-                >
-                  ✕ Cerrar
-                </button>
-              </div>
-            )}
-          </div>
         </div>
       </div>
 

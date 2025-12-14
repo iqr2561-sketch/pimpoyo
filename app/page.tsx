@@ -34,88 +34,34 @@ export default function Home() {
     e.preventDefault()
     setIsLoading(true)
     setError('')
-    setSuccess('')
+    setSuccess('¡Entrando al modo laboratorio! 🧪')
 
-    try {
-      const result = await signIn('credentials', {
-        email: loginData.email,
-        password: loginData.password,
-        redirect: false,
-      })
-
-      if (result?.error) {
-        setError('Credenciales inválidas')
-      } else {
-        setSuccess('¡Listo! Entrando...')
-        router.push('/dashboard')
-      }
-    } catch (error) {
-      setError('Error al iniciar sesión')
-    } finally {
-      setIsLoading(false)
-    }
+    // Modo laboratorio - ir directo a venta móvil sin login
+    setTimeout(() => {
+      window.location.href = '/mobile'
+    }, 500)
   }
 
   const handleRegister = async (e: FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError('')
-    setSuccess('')
+    setSuccess('¡Entrando al modo laboratorio! 🧪')
 
-    try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(registerData),
-      })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Error al registrar')
-      }
-
-      // Auto login después del registro
-      const result = await signIn('credentials', {
-        email: registerData.email,
-        password: registerData.password,
-        redirect: false,
-      })
-
-      if (result?.error) {
-        setError('Registro exitoso, pero error al iniciar sesión')
-      } else {
-        setSuccess('¡Cuenta creada! Entrando...')
-        router.push('/dashboard')
-      }
-    } catch (error: any) {
-      setError(error.message || 'Error al registrar usuario')
-    } finally {
-      setIsLoading(false)
-    }
+    // Modo laboratorio - ir directo a venta móvil sin registro
+    setTimeout(() => {
+      window.location.href = '/mobile'
+    }, 500)
   }
 
   const handleDevLogin = async () => {
     setIsLoading(true)
-    setError('')
-    setSuccess('')
-    try {
-      await fetch('/api/auth/dev-login', { method: 'POST' })
-      const result = await signIn('credentials', {
-        email: 'demo@factura.dev',
-        password: 'demo1234',
-        redirect: false,
-      })
-      if (result?.error) {
-        setError('No se pudo entrar en modo demo')
-      } else {
-        setSuccess('Entrando en modo demo...')
-        router.push('/dashboard')
-      }
-    } catch (err) {
-      setError('Error al activar modo demo')
-    } finally {
-      setIsLoading(false)
-    }
+    setSuccess('¡Entrando al modo laboratorio! 🧪')
+    
+    // Modo laboratorio - ir directo a venta móvil
+    setTimeout(() => {
+      window.location.href = '/mobile'
+    }, 500)
   }
 
   return (
@@ -129,16 +75,15 @@ export default function Home() {
       <div className="relative z-10 max-w-6xl mx-auto px-6 py-12 lg:py-16">
         <div className="grid lg:grid-cols-2 gap-10 items-center">
           <div className="space-y-6">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-medium border border-white/10">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-              Plataforma de facturación + venta móvil
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-400/20 text-xs font-bold border border-yellow-400/40 text-yellow-300">
+              <span className="text-lg">🧪</span>
+              MODO LABORATORIO - Sin autenticación requerida
             </span>
             <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
-              Factura rápida, venta ágil y control total en un solo lugar.
+              Venta Rápida en Modo Laboratorio 🧪
             </h1>
             <p className="text-slate-200/80 text-lg">
-              Accede al panel web, registra ventas desde el móvil y genera documentos al instante.
-              Diseñamos un login moderno con animación para que entrar sea tan rápido como cobrar.
+              Estás en <strong>modo demo/laboratorio</strong>. Haz clic en cualquier botón de acceso para entrar directamente a la venta móvil sin necesidad de autenticación. Perfecto para pruebas y demostraciones.
             </p>
             <div className="grid grid-cols-2 gap-4">
               <Card className="bg-white/5 border-white/10 text-white">
@@ -254,19 +199,17 @@ export default function Home() {
                     </span>
                   </div>
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Iniciando...' : 'Entrar'}
+                    {isLoading ? 'Entrando al sistema...' : '🧪 Entrar Modo Laboratorio'}
                   </Button>
-                  {isDevMode && (
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      className="w-full"
-                      onClick={handleDevLogin}
-                      disabled={isLoading}
-                    >
-                      {isLoading ? 'Preparando demo...' : 'Entrar rápido (modo demo)'}
-                    </Button>
-                  )}
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="w-full"
+                    onClick={handleDevLogin}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Entrando...' : '⚡ Acceso Rápido'}
+                  </Button>
                 </form>
               ) : (
                 <form onSubmit={handleRegister} className="space-y-4">
@@ -329,7 +272,7 @@ export default function Home() {
                     required
                   />
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Creando cuenta...' : 'Crear y entrar'}
+                    {isLoading ? 'Entrando al sistema...' : '🧪 Entrar Modo Laboratorio'}
                   </Button>
                 </form>
               )}
