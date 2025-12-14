@@ -159,14 +159,12 @@ export default function Home() {
               </Card>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Link href="/mobile">
-                <Button variant="secondary">Ir a venta móvil</Button>
-              </Link>
-              <Link href="/dashboard">
-                <Button variant="ghost" className="border border-white/20 hover:border-white/40">
-                  Ver panel (requiere sesión)
-                </Button>
-              </Link>
+              <Button variant="secondary" asChild>
+                <Link href="/mobile">Ir a venta móvil</Link>
+              </Button>
+              <Button variant="ghost" className="border border-white/20 hover:border-white/40" asChild>
+                <Link href="/dashboard">Ver panel (requiere sesión)</Link>
+              </Button>
             </div>
           </div>
 
