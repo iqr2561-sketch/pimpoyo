@@ -8,8 +8,6 @@ import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 
-export const dynamic = 'force-dynamic'
-
 export default function Home() {
   const router = useRouter()
   const [isLogin, setIsLogin] = useState(true)
@@ -159,11 +157,18 @@ export default function Home() {
               </Card>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button variant="secondary" asChild>
-                <Link href="/mobile">Ir a venta móvil</Link>
+              <Button 
+                variant="secondary" 
+                onClick={() => router.push('/mobile')}
+              >
+                Ir a venta móvil
               </Button>
-              <Button variant="ghost" className="border border-white/20 hover:border-white/40" asChild>
-                <Link href="/dashboard">Ver panel (requiere sesión)</Link>
+              <Button 
+                variant="ghost" 
+                className="border border-white/20 hover:border-white/40"
+                onClick={() => router.push('/dashboard')}
+              >
+                Ver panel (requiere sesión)
               </Button>
             </div>
           </div>
