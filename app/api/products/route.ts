@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { code, name, description, price, cost, category, unit, initialStock, minQuantity, maxQuantity, location } = body
+    const { code, barcode, name, description, price, cost, category, unit, initialStock, minQuantity, maxQuantity, location } = body
 
     if (!code || !name || price === undefined) {
       return NextResponse.json(
@@ -76,6 +76,7 @@ export async function POST(request: NextRequest) {
     const product = await prisma.product.create({
       data: {
         code,
+        barcode,
         name,
         description,
         price,

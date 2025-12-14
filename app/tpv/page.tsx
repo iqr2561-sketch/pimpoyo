@@ -14,6 +14,7 @@ export const dynamic = 'force-dynamic'
 interface Product {
   id: string
   code: string
+  barcode?: string
   name: string
   price: number
   stock?: { quantity: number }
@@ -64,10 +65,39 @@ export default function TPVPage() {
   const filteredProducts = products.filter((p) => {
     const matchesSearch = 
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.code.toLowerCase().includes(searchTerm.toLowerCase())
+      p.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (p.barcode && p.barcode.toLowerCase().includes(searchTerm.toLowerCase()))
     const matchesCategory = selectedCategory === 'ALL' || (p.category || 'SIN CATEGORÍA') === selectedCategory
     return matchesSearch && matchesCategory
   })
+
+  // Función para manejar escaneo de código de barras
+  const handleBarcodeSearch = (barcode: string) => {
+    const product = products.find((p) => p.barcode === barcode || p.code === barcode)
+    if (product) {
+      addToCart(product)
+      setSearchTerm('') // Limpiar búsqueda después de agregar
+    }
+  }
+
+  // Detectar cuando se escanea un código de barras (Enter después de escribir)
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchTerm.trim()) {
+      // Buscar producto exacto por código de barras o código
+      const product = products.find(
+        (p) => 
+          p.barcode === searchTerm.trim() || 
+          p.code.toLowerCase() === searchTerm.trim().toLowerCase()
+      )
+      
+      if (product) {
+        addToCart(product)
+        setSearchTerm('')
+        // Enfocar nuevamente el input para siguiente escaneo
+        ;(e.target as HTMLInputElement).focus()
+      }
+    }
+  }
 
   const addToCart = (product: Product) => {
     const stockQty = product.stock?.quantity || 0
@@ -215,16 +245,29 @@ export default function TPVPage() {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-3">
           {/* Panel de Productos (izquierda - 2/3) */}
           <div className="xl:col-span-2 space-y-3">
-            {/* Buscador */}
+            {/* Buscador con soporte para código de barras */}
             <div className="bg-white rounded-xl shadow-lg p-3">
-              <input
-                type="text"
-                placeholder="🔍 Buscar por nombre o código del producto..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full text-base px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:border-emerald-500 focus:outline-none"
-                autoFocus
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="🔍 Buscar por nombre, código o escanear código de barras..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={handleSearchKeyDown}
+                  className="w-full text-base px-3 py-2.5 pr-20 border-2 border-slate-200 rounded-lg focus:border-emerald-500 focus:outline-none"
+                  autoFocus
+                />
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                  <span className="text-xs text-slate-500 font-medium bg-slate-100 px-2 py-1 rounded">
+                    📷 Escanear
+                  </span>
+                </div>
+              </div>
+              {searchTerm && filteredProducts.length === 0 && (
+                <p className="text-xs text-red-600 mt-2">
+                  ⚠️ No se encontró producto con ese código
+                </p>
+              )}
             </div>
 
             {/* Categorías */}

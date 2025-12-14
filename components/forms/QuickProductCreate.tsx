@@ -19,6 +19,7 @@ export function QuickProductCreate({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     code: '',
+    barcode: '',
     name: '',
     price: '',
     initialStock: '0',
@@ -34,6 +35,7 @@ export function QuickProductCreate({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           code: formData.code,
+          barcode: formData.barcode || undefined,
           name: formData.name,
           price: parseFloat(formData.price),
           unit: 'UN',
@@ -85,6 +87,13 @@ export function QuickProductCreate({
             onChange={(e) => setFormData({ ...formData, code: e.target.value })}
             placeholder="Ej: PROD001"
             required
+          />
+
+          <Input
+            label="Código de Barras (opcional)"
+            value={formData.barcode}
+            onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
+            placeholder="Escanea o escribe el código"
           />
 
           <Input
