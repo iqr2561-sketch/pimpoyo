@@ -1,9 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { formatCurrency } from '@/lib/utils'
+import { QuickProductCreate } from './QuickProductCreate'
 
 export interface DocumentItem {
   id?: string
@@ -18,6 +20,8 @@ interface ItemListProps {
 }
 
 export function ItemList({ items, onChange }: ItemListProps) {
+  const { data: session } = useSession()
+  const [showQuickCreate, setShowQuickCreate] = useState(false)
   const addItem = () => {
     onChange([
       ...items,
@@ -43,13 +47,45 @@ export function ItemList({ items, onChange }: ItemListProps) {
   const tax = subtotal * 0.21 // IVA 21%
   const total = subtotal + tax
 
+  const handleProductCreated = (product: any) => {
+    // Agregar el nuevo producto como item
+    onChange([
+      ...items,
+      {
+        description: product.name,
+        quantity: 1,
+        unitPrice: product.price,
+      },
+    ])
+    setShowQuickCreate(false)
+  }
+
   return (
     <div className="space-y-4">
+      {showQuickCreate && session?.user?.companyId && (
+        <QuickProductCreate
+          onProductCreated={handleProductCreated}
+          onCancel={() => setShowQuickCreate(false)}
+          companyId={session.user.companyId}
+        />
+      )}
+
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold text-slate-900">Items del Documento</h3>
-        <Button type="button" onClick={addItem} size="sm">
-          + Agregar Item
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            onClick={() => setShowQuickCreate(true)}
+            size="sm"
+            variant="outline"
+            className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-300"
+          >
+            ⚡ Producto Nuevo
+          </Button>
+          <Button type="button" onClick={addItem} size="sm">
+            + Agregar Item
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-3">
