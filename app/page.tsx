@@ -1,15 +1,15 @@
 'use client'
 
 import { useState, FormEvent, useMemo } from 'react'
-import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+// import { signIn } from 'next-auth/react' // DESACTIVADO - Modo Laboratorio
+// import { useRouter } from 'next/navigation' // DESACTIVADO - Modo Laboratorio
 import Link from 'next/link'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 
 export default function Home() {
-  const router = useRouter()
+  // const router = useRouter() // DESACTIVADO - Modo Laboratorio
   const [isLogin, setIsLogin] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { SessionProvider } from '@/components/providers/SessionProvider'
+// import { SessionProvider } from '@/components/providers/SessionProvider' // DESACTIVADO - Modo Laboratorio
 import { ToastProvider } from '@/components/ui/Toast'
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt'
 
@@ -39,12 +39,11 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
       <body className={inter.className}>
-        <SessionProvider>
-          <ToastProvider>
-            {children}
-            <PWAInstallPrompt />
-          </ToastProvider>
-        </SessionProvider>
+        {/* SessionProvider DESACTIVADO - Modo Laboratorio */}
+        <ToastProvider>
+          {children}
+          <PWAInstallPrompt />
+        </ToastProvider>
       </body>
     </html>
   )
