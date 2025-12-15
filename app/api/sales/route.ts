@@ -177,6 +177,18 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Si es cuenta corriente, actualizar balance del cliente
+    if (paymentMethod === 'ACCOUNT' && clientId) {
+      await prisma.client.update({
+        where: { id: clientId },
+        data: {
+          balance: {
+            increment: total, // Incrementar la deuda
+          },
+        },
+      })
+    }
+
     return NextResponse.json(sale, { status: 201 })
   } catch (error) {
     console.error('Error creating sale:', error)

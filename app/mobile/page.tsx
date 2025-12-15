@@ -47,6 +47,7 @@ export default function MobilePage() {
   const [showCreateClientModal, setShowCreateClientModal] = useState(false)
   const [newClientName, setNewClientName] = useState('')
   const [newClientPhone, setNewClientPhone] = useState('')
+  const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'ACCOUNT'>('CASH')
 
   useEffect(() => {
     // Cargar productos siempre, sin requerir sesión
@@ -123,13 +124,13 @@ export default function MobilePage() {
         unitPrice: item.product.price,
       }))
 
-      const response = await fetch('/api/sales', {
+        const response = await fetch('/api/sales', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           items,
           clientId: selectedClient?.id || null,
-          paymentMethod: 'CASH',
+          paymentMethod: paymentMethod,
         }),
       })
 
@@ -143,16 +144,19 @@ export default function MobilePage() {
         setCart([])
         fetchProducts() // Actualizar stock
         setShowCart(false)
-        // Mostrar modal de WhatsApp después de un breve delay
-        setTimeout(() => {
-          setShowWhatsAppModal(true)
-          if (selectedClient?.phone) {
-            setWhatsAppPhone(selectedClient.phone)
-          }
-          if (selectedClient?.name) {
-            setWhatsAppName(selectedClient.name)
-          }
-        }, 300)
+        setPaymentMethod('CASH') // Resetear método de pago
+        // Mostrar modal de WhatsApp después de un breve delay (solo si no es cuenta corriente)
+        if (paymentMethod === 'CASH') {
+          setTimeout(() => {
+            setShowWhatsAppModal(true)
+            if (selectedClient?.phone) {
+              setWhatsAppPhone(selectedClient.phone)
+            }
+            if (selectedClient?.name) {
+              setWhatsAppName(selectedClient.name)
+            }
+          }, 300)
+        }
       } else {
         const error = await response.json()
         toast(error.error || 'Error al realizar la venta', 'error')
@@ -483,6 +487,34 @@ export default function MobilePage() {
                 <span className="text-indigo-600">{formatCurrency(total)}</span>
               </div>
             </div>
+            {/* Método de Pago */}
+            {selectedClient && (
+              <div className="mb-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                <div className="text-sm font-medium text-slate-700 mb-2">Método de Pago:</div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setPaymentMethod('CASH')}
+                    className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all ${
+                      paymentMethod === 'CASH'
+                        ? 'bg-indigo-600 text-white shadow-md'
+                        : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'
+                    }`}
+                  >
+                    💵 Efectivo
+                  </button>
+                  <button
+                    onClick={() => setPaymentMethod('ACCOUNT')}
+                    className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all ${
+                      paymentMethod === 'ACCOUNT'
+                        ? 'bg-indigo-600 text-white shadow-md'
+                        : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'
+                    }`}
+                  >
+                    💰 Cuenta Corriente
+                  </button>
+                </div>
+              </div>
+            )}
             <div className="flex gap-2">
               <Button
                 variant="outline"
@@ -495,7 +527,7 @@ export default function MobilePage() {
               <Button
                 className="flex-1 text-base font-bold shadow-lg"
                 onClick={handleSale}
-                disabled={isProcessing}
+                disabled={isProcessing || (paymentMethod === 'ACCOUNT' && !selectedClient)}
               >
                 {isProcessing ? '⏳...' : '✓ Finalizar'}
               </Button>

@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, cuit, address, phone, email } = body
+    const { name, cuit, address, phone, email, condicionIVA, tipoDocumento } = body
 
     if (!name) {
       return NextResponse.json(
@@ -80,6 +80,8 @@ export async function POST(request: NextRequest) {
         address,
         phone,
         email,
+        ...(condicionIVA && { condicionIVA }),
+        ...(tipoDocumento && { tipoDocumento }),
         companyId: companyId,
       },
     })

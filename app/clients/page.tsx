@@ -7,7 +7,7 @@ import { Sidebar } from '@/components/layout/Sidebar'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { formatDate } from '@/lib/utils'
+import { formatDate, formatCurrency } from '@/lib/utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -18,6 +18,9 @@ interface Client {
   phone?: string | null
   email?: string | null
   address?: string | null
+  balance?: number
+  condicionIVA?: string
+  tipoDocumento?: string
   createdAt: string
 }
 
@@ -34,7 +37,11 @@ export default function ClientsPage() {
     phone: '',
     email: '',
     address: '',
+    condicionIVA: 'CONSUMIDOR_FINAL',
+    tipoDocumento: 'CUIT',
   })
+  const [showFiscalForm, setShowFiscalForm] = useState(false)
+  const [selectedClientForFiscal, setSelectedClientForFiscal] = useState<Client | null>(null)
 
   useEffect(() => {
     // Modo demo - permitir acceso sin autenticación
@@ -91,8 +98,68 @@ export default function ClientsPage() {
       phone: client.phone || '',
       email: client.email || '',
       address: client.address || '',
+      condicionIVA: client.condicionIVA || 'CONSUMIDOR_FINAL',
+      tipoDocumento: client.tipoDocumento || 'CUIT',
     })
     setShowCreateForm(true)
+  }
+
+  const handleEditFiscal = (client: Client) => {
+    setSelectedClientForFiscal(client)
+    setFormData({
+      name: client.name,
+      cuit: client.cuit || '',
+      phone: client.phone || '',
+      email: client.email || '',
+      address: client.address || '',
+      condicionIVA: client.condicionIVA || 'CONSUMIDOR_FINAL',
+      tipoDocumento: client.tipoDocumento || 'CUIT',
+    })
+    setShowFiscalForm(true)
+  }
+
+  const handleSaveFiscal = async () => {
+    if (!selectedClientForFiscal) return
+
+    try {
+      const response = await fetch(`/api/clients/${selectedClientForFiscal.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: selectedClientForFiscal.name,
+          cuit: formData.cuit,
+          phone: selectedClientForFiscal.phone,
+          email: selectedClientForFiscal.email,
+          address: selectedClientForFiscal.address,
+          condicionIVA: formData.condicionIVA,
+          tipoDocumento: formData.tipoDocumento,
+        }),
+      })
+
+      if (response.ok) {
+        alert('Datos fiscales actualizados')
+        setShowFiscalForm(false)
+        setSelectedClientForFiscal(null)
+        fetchClients()
+      } else {
+        const error = await response.json()
+        alert(error.error || 'Error al actualizar datos fiscales')
+      }
+    } catch (error) {
+      alert('Error al actualizar datos fiscales')
+    }
+  }
+
+  const handleFacturar = (client: Client) => {
+    window.location.href = `/documents/new?clientId=${client.id}&type=INVOICE`
+  }
+
+  const handleRemito = (client: Client) => {
+    window.location.href = `/documents/new?clientId=${client.id}&type=REMITO`
+  }
+
+  const handleCuentaCorriente = (client: Client) => {
+    window.location.href = `/clients/${client.id}/account`
   }
 
   const handleDelete = async (clientId: string) => {
@@ -212,7 +279,7 @@ export default function ClientsPage() {
                       onClick={() => {
                         setShowCreateForm(false)
                         setEditingClient(null)
-                        setFormData({ name: '', cuit: '', phone: '', email: '', address: '' })
+                        setFormData({ name: '', cuit: '', phone: '', email: '', address: '', condicionIVA: 'CONSUMIDOR_FINAL', tipoDocumento: 'CUIT' })
                       }}
                     >
                       Cancelar
@@ -222,6 +289,76 @@ export default function ClientsPage() {
                     </Button>
                   </div>
                 </form>
+              </Card>
+            )}
+
+            {/* Formulario de Datos Fiscales */}
+            {showFiscalForm && selectedClientForFiscal && (
+              <Card className="mb-6 bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200">
+                <h3 className="text-lg font-bold text-slate-900 mb-4">
+                  Datos Fiscales - {selectedClientForFiscal.name}
+                </h3>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Condición IVA *
+                      </label>
+                      <select
+                        value={formData.condicionIVA}
+                        onChange={(e) =>
+                          setFormData({ ...formData, condicionIVA: e.target.value })
+                        }
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      >
+                        <option value="CONSUMIDOR_FINAL">Consumidor Final</option>
+                        <option value="RESPONSABLE_INSCRIPTO">Responsable Inscripto</option>
+                        <option value="MONOTRIBUTO">Monotributo</option>
+                        <option value="EXENTO">Exento</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Tipo de Documento *
+                      </label>
+                      <select
+                        value={formData.tipoDocumento}
+                        onChange={(e) =>
+                          setFormData({ ...formData, tipoDocumento: e.target.value })
+                        }
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      >
+                        <option value="CUIT">CUIT</option>
+                        <option value="CUIL">CUIL</option>
+                        <option value="DNI">DNI</option>
+                        <option value="PASAPORTE">Pasaporte</option>
+                      </select>
+                    </div>
+                    <Input
+                      label="CUIT"
+                      value={formData.cuit}
+                      onChange={(e) =>
+                        setFormData({ ...formData, cuit: e.target.value })
+                      }
+                      className="md:col-span-2"
+                    />
+                  </div>
+                  <div className="flex gap-3 justify-end">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setShowFiscalForm(false)
+                        setSelectedClientForFiscal(null)
+                      }}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button onClick={handleSaveFiscal}>
+                      Guardar Datos Fiscales
+                    </Button>
+                  </div>
+                </div>
               </Card>
             )}
 
@@ -274,6 +411,48 @@ export default function ClientsPage() {
                         <p className="text-xs text-slate-500">
                           Creado: {formatDate(client.createdAt)}
                         </p>
+                      </div>
+                      {client.balance !== undefined && client.balance !== 0 && (
+                        <div className="mb-3 p-2 bg-indigo-50 rounded-lg border border-indigo-200">
+                          <div className="text-xs text-slate-600 mb-1">Saldo Cuenta Corriente:</div>
+                          <div className={`text-lg font-bold ${client.balance > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                            {formatCurrency(Math.abs(client.balance))} {client.balance > 0 ? '(Debe)' : '(A favor)'}
+                          </div>
+                        </div>
+                      )}
+                      <div className="grid grid-cols-2 gap-2 mb-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => handleFacturar(client)}
+                        >
+                          📄 Facturar
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => handleRemito(client)}
+                        >
+                          📋 Remito
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => handleCuentaCorriente(client)}
+                        >
+                          💰 Cta. Cte.
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => handleEditFiscal(client)}
+                        >
+                          ⚙️ Fiscal
+                        </Button>
                       </div>
                       <div className="flex gap-2">
                         <Button

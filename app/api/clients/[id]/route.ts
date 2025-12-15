@@ -63,7 +63,7 @@ export async function PUT(
     }
 
     const body = await request.json()
-    const { name, cuit, address, phone, email } = body
+    const { name, cuit, address, phone, email, condicionIVA, tipoDocumento, balance } = body
 
     if (!name) {
       return NextResponse.json(
@@ -91,6 +91,9 @@ export async function PUT(
         address,
         phone,
         email,
+        ...(condicionIVA && { condicionIVA }),
+        ...(tipoDocumento && { tipoDocumento }),
+        ...(balance !== undefined && { balance }),
       },
     })
 
