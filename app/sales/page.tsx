@@ -18,6 +18,7 @@ interface Sale {
   total: number
   status: string
   paymentMethod?: string
+  facturaGenerada?: boolean
   client?: {
     name: string
   }
@@ -37,14 +38,14 @@ export default function SalesPage() {
   const [filter, setFilter] = useState('all')
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/')
-      return
-    }
+    // Modo demo - permitir acceso sin autenticación
+    // if (status === 'unauthenticated') {
+    //   router.push('/')
+    //   return
+    // }
 
-    if (status === 'authenticated') {
-      fetchSales()
-    }
+    // Cargar ventas siempre (modo demo)
+    fetchSales()
   }, [status, router, filter])
 
   const fetchSales = async () => {
@@ -88,13 +89,18 @@ export default function SalesPage() {
     }
   }
 
-  if (status === 'loading' || isLoading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div>Cargando...</div>
       </div>
     )
   }
+
+  // Modo demo - no verificar autenticación
+  // if (status === 'unauthenticated') {
+  //   return null
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -158,7 +164,7 @@ export default function SalesPage() {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
+                        <div className="flex items-center gap-3 mb-2 flex-wrap">
                           <h3 className="text-lg font-bold text-slate-900">
                             {sale.number}
                           </h3>
@@ -169,6 +175,16 @@ export default function SalesPage() {
                           >
                             {getStatusText(sale.status)}
                           </span>
+                          {!sale.facturaGenerada && sale.status === 'COMPLETED' && (
+                            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-700 border border-orange-300">
+                              ⚠️ Sin Facturar
+                            </span>
+                          )}
+                          {sale.facturaGenerada && (
+                            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-300">
+                              ✅ Facturada
+                            </span>
+                          )}
                         </div>
                         <div className="text-sm text-slate-600 space-y-1">
                           <p>

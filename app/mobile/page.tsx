@@ -43,6 +43,8 @@ export default function MobilePage() {
   const [lastSaleTotal, setLastSaleTotal] = useState(0)
   const [swipedItemId, setSwipedItemId] = useState<string | null>(null)
   const [touchStartX, setTouchStartX] = useState<{ [key: string]: number }>({})
+  const [showCreateClientModal, setShowCreateClientModal] = useState(false)
+  const [newClientName, setNewClientName] = useState('')
 
   useEffect(() => {
     // Cargar productos siempre, sin requerir sesión
@@ -234,38 +236,32 @@ export default function MobilePage() {
               </Button>
             </Link>
           </div>
-          <div className="flex gap-2">
-            <Input
-              placeholder="🔍 Buscar producto por nombre o código..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="shadow-md flex-1"
-            />
+          <div className="flex justify-center mb-2">
             <Button
               onClick={() => setShowClientModal(true)}
               className="bg-white/20 hover:bg-white/30 text-white border-white/30 shadow-md"
               size="sm"
             >
-              👤 {selectedClient ? selectedClient.name.substring(0, 10) + '...' : 'Cliente'}
+              👤 {selectedClient ? 'Cliente: ' + selectedClient.name : 'Seleccionar Cliente'}
             </Button>
           </div>
+          {selectedClient && (
+            <div className="text-center mb-3">
+              <span className="text-xs text-emerald-300 font-medium">
+                {selectedClient.name}
+              </span>
+            </div>
+          )}
+          <Input
+            placeholder="🔍 Buscar producto por nombre o código..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="shadow-md"
+          />
         </div>
       </div>
 
       <div className="p-4">
-        {/* Texto sutil de desarrollo */}
-        <div className="text-center mb-3">
-          <a
-            href="https://wa.me/5492245506078"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[10px] text-slate-400 hover:text-slate-500 transition-colors"
-          >
-            bajo desarrollo por{' '}
-            <span className="underline decoration-dotted">surconexion</span>
-          </a>
-        </div>
-        
         {/* Lista de Productos */}
         <div className="grid grid-cols-2 gap-3 mb-4">
           {filteredProducts.map((product) => {
@@ -516,6 +512,16 @@ export default function MobilePage() {
                 <div className="font-bold text-slate-900">Sin Cliente</div>
                 <div className="text-sm text-slate-600">Venta sin asignar</div>
               </button>
+              <button
+                onClick={() => {
+                  setShowClientModal(false)
+                  setShowCreateClientModal(true)
+                }}
+                className="w-full p-4 mb-2 bg-indigo-100 hover:bg-indigo-200 rounded-lg text-left border-2 border-indigo-300"
+              >
+                <div className="font-bold text-indigo-900">+ Crear Nuevo Cliente</div>
+                <div className="text-sm text-indigo-600">Agregar cliente rápido</div>
+              </button>
               {clients
                 .filter(client =>
                   client.name.toLowerCase().includes(clientSearch.toLowerCase()) ||
@@ -606,6 +612,81 @@ export default function MobilePage() {
           </div>
         </div>
       )}
+
+      {/* Modal de Crear Cliente */}
+      {showCreateClientModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">
+              Crear Nuevo Cliente
+            </h2>
+            <Input
+              label="Nombre del Cliente"
+              placeholder="Ingresa el nombre..."
+              value={newClientName}
+              onChange={(e) => setNewClientName(e.target.value)}
+              className="mb-4"
+            />
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => {
+                  setShowCreateClientModal(false)
+                  setNewClientName('')
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button
+                className="flex-1"
+                onClick={async () => {
+                  if (!newClientName.trim()) {
+                    toast('Por favor ingresa un nombre', 'error')
+                    return
+                  }
+                  try {
+                    const response = await fetch('/api/clients', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        name: newClientName.trim(),
+                      }),
+                    })
+                    if (response.ok) {
+                      const newClient = await response.json()
+                      setSelectedClient(newClient)
+                      setShowCreateClientModal(false)
+                      setNewClientName('')
+                      fetchClients()
+                      toast('Cliente creado exitosamente', 'success')
+                    } else {
+                      toast('Error al crear cliente', 'error')
+                    }
+                  } catch (error) {
+                    toast('Error al crear cliente', 'error')
+                  }
+                }}
+              >
+                Crear
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Texto sutil de desarrollo al final */}
+      <div className="fixed bottom-2 left-0 right-0 text-center z-40 pointer-events-none">
+        <a
+          href="https://wa.me/5492245506078"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[10px] text-slate-400 hover:text-slate-500 transition-colors pointer-events-auto inline-block bg-white/80 backdrop-blur-sm px-2 py-1 rounded-full"
+        >
+          bajo desarrollo por{' '}
+          <span className="underline decoration-dotted">surconexion</span>
+        </a>
+      </div>
     </div>
   )
 }

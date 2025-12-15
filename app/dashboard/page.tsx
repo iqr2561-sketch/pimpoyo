@@ -43,11 +43,14 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true)
   const [period, setPeriod] = useState('month')
 
+  const [unfacturedSales, setUnfacturedSales] = useState(0)
+
   const fetchData = useCallback(async () => {
     try {
-      const [docsRes, statsRes] = await Promise.all([
+      const [docsRes, statsRes, salesRes] = await Promise.all([
         fetch('/api/documents'),
         fetch(`/api/stats?period=${period}`),
+        fetch('/api/sales'),
       ])
 
       if (docsRes.ok) {
@@ -58,6 +61,15 @@ export default function Dashboard() {
       if (statsRes.ok) {
         const statsData = await statsRes.json()
         setStats(statsData)
+      }
+
+      if (salesRes.ok) {
+        const salesData = await salesRes.json()
+        // Contar ventas completadas sin facturar
+        const unfactured = salesData.filter(
+          (sale: any) => sale.status === 'COMPLETED' && !sale.facturaGenerada
+        ).length
+        setUnfacturedSales(unfactured)
       }
     } catch (error) {
       console.error('Error fetching data:', error)
@@ -99,6 +111,42 @@ export default function Dashboard() {
                 Accesos rápidos y resumen de tu negocio
               </p>
             </div>
+
+            {/* Recordatorio de Datos Fiscales */}
+            <div className="mb-6 p-4 bg-yellow-500/20 border-2 border-yellow-500/50 rounded-lg">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">⚠️</span>
+                <div className="flex-1">
+                  <h3 className="font-bold text-yellow-200 mb-1">Datos Fiscales Pendientes</h3>
+                  <p className="text-yellow-100 text-sm">
+                    Completa tus datos fiscales para poder generar facturas electrónicas. 
+                    <Link href="/settings" className="underline ml-1">Configurar ahora →</Link>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Notificación de Ventas Sin Facturar */}
+            {unfacturedSales > 0 && (
+              <div className="mb-6 p-4 bg-orange-500/20 border-2 border-orange-500/50 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">📋</span>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-orange-200 mb-1">
+                      {unfacturedSales} {unfacturedSales === 1 ? 'venta pendiente' : 'ventas pendientes'} de facturar
+                    </h3>
+                    <p className="text-orange-100 text-sm mb-2">
+                      Tienes ventas completadas que aún no han sido facturadas.
+                    </p>
+                    <Link href="/sales">
+                      <Button variant="secondary" size="sm" className="bg-orange-500 hover:bg-orange-600 text-white">
+                        Ver Ventas Pendientes →
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Botones de Acceso Rápido - Tipo Imagen del Usuario */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
