@@ -34,9 +34,9 @@ export default function Home() {
     e.preventDefault()
     setIsLoading(true)
     setError('')
-    setSuccess('¡Entrando al modo laboratorio! 🧪')
+    setSuccess('¡Entrando al modo demostración! 🧪')
 
-    // Modo laboratorio - ir directo a venta móvil sin login
+    // Modo demo - ir directo a venta móvil sin login
     setTimeout(() => {
       window.location.href = '/mobile'
     }, 500)
@@ -46,9 +46,9 @@ export default function Home() {
     e.preventDefault()
     setIsLoading(true)
     setError('')
-    setSuccess('¡Entrando al modo laboratorio! 🧪')
+    setSuccess('¡Entrando al modo demostración! 🧪')
 
-    // Modo laboratorio - ir directo a venta móvil sin registro
+    // Modo demo - ir directo a venta móvil sin registro
     setTimeout(() => {
       window.location.href = '/mobile'
     }, 500)
@@ -56,11 +56,21 @@ export default function Home() {
 
   const handleDevLogin = async () => {
     setIsLoading(true)
-    setSuccess('¡Entrando al modo laboratorio! 🧪')
+    setSuccess('¡Entrando al modo demostración! 🧪')
     
-    // Modo laboratorio - ir directo a venta móvil
+    // Modo demo - ir directo a venta móvil
     setTimeout(() => {
       window.location.href = '/mobile'
+    }, 500)
+  }
+
+  const handleDashboardAccess = async () => {
+    setIsLoading(true)
+    setSuccess('¡Accediendo al panel de control! 🏠')
+    
+    // Modo demo - ir directo al dashboard
+    setTimeout(() => {
+      window.location.href = '/dashboard'
     }, 500)
   }
 
@@ -77,13 +87,13 @@ export default function Home() {
           <div className="space-y-6">
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-400/20 text-xs font-bold border border-yellow-400/40 text-yellow-300">
               <span className="text-lg">🧪</span>
-              MODO LABORATORIO - Sin autenticación requerida
+              VERSIÓN DEMOSTRACIÓN - Modo Prueba
             </span>
             <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
-              Venta Rápida en Modo Laboratorio 🧪
+              Sistema de Venta - Versión Demo 🧪
             </h1>
             <p className="text-slate-200/80 text-lg">
-              Estás en <strong>modo demo/laboratorio</strong>. Haz clic en cualquier botón de acceso para entrar directamente a la venta móvil sin necesidad de autenticación. Perfecto para pruebas y demostraciones.
+              Estás en <strong>modo demostración</strong>. Accede directamente al sistema sin necesidad de autenticación. Perfecto para pruebas y demostraciones.
             </p>
             <div className="grid grid-cols-2 gap-4">
               <Card className="bg-white/5 border-white/10 text-white">
@@ -113,7 +123,7 @@ export default function Home() {
                 className="border border-white/20 hover:border-white/40"
                 onClick={() => window.location.href = '/dashboard'}
               >
-                🏠 Ver panel (requiere sesión)
+                🏠 Panel de Control
               </Button>
             </div>
           </div>
@@ -199,16 +209,23 @@ export default function Home() {
                     </span>
                   </div>
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Entrando al sistema...' : '🧪 Entrar Modo Laboratorio'}
+                    {isLoading ? 'Entrando al sistema...' : '🧪 Entrar Modo Demo'}
                   </Button>
                   <Button
                     type="button"
-                    variant="secondary"
-                    className="w-full"
+                    className="w-full bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 hover:from-orange-600 hover:via-amber-600 hover:to-yellow-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                     onClick={handleDevLogin}
                     disabled={isLoading}
                   >
-                    {isLoading ? 'Entrando...' : '⚡ Acceso Rápido'}
+                    {isLoading ? 'Entrando...' : '⚡ Acceso Rápido - Venta Móvil'}
+                  </Button>
+                  <Button
+                    type="button"
+                    className="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                    onClick={handleDashboardAccess}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Entrando...' : '🏠 Panel de Control'}
                   </Button>
                 </form>
               ) : (
@@ -272,7 +289,23 @@ export default function Home() {
                     required
                   />
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Entrando al sistema...' : '🧪 Entrar Modo Laboratorio'}
+                    {isLoading ? 'Entrando al sistema...' : '🧪 Entrar Modo Demo'}
+                  </Button>
+                  <Button
+                    type="button"
+                    className="w-full bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 hover:from-orange-600 hover:via-amber-600 hover:to-yellow-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                    onClick={handleDevLogin}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Entrando...' : '⚡ Acceso Rápido - Venta Móvil'}
+                  </Button>
+                  <Button
+                    type="button"
+                    className="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                    onClick={handleDashboardAccess}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Entrando...' : '🏠 Panel de Control'}
                   </Button>
                 </form>
               )}

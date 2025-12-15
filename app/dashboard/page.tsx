@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
@@ -43,18 +43,7 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true)
   const [period, setPeriod] = useState('month')
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/')
-      return
-    }
-
-    if (status === 'authenticated') {
-      fetchData()
-    }
-  }, [status, router, period])
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [docsRes, statsRes] = await Promise.all([
         fetch('/api/documents'),
@@ -75,9 +64,15 @@ export default function Dashboard() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [period])
 
-  if (status === 'loading' || isLoading) {
+  useEffect(() => {
+    // Modo demo - permitir acceso sin autenticación
+    // Cargar datos siempre (modo demo)
+    fetchData()
+  }, [fetchData])
+
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div>Cargando...</div>
@@ -85,9 +80,10 @@ export default function Dashboard() {
     )
   }
 
-  if (status === 'unauthenticated') {
-    return null
-  }
+  // Modo demo - no verificar autenticación
+  // if (status === 'unauthenticated') {
+  //   return null
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">

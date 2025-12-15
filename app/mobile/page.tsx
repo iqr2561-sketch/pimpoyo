@@ -134,10 +134,10 @@ export default function MobilePage() {
       {/* Header */}
       <div className="bg-gradient-to-r from-indigo-600 to-blue-600 shadow-lg sticky top-0 z-10">
         <div className="p-4">
-          {/* Banner Modo Laboratorio */}
+          {/* Banner Modo Demo */}
           <div className="mb-3 bg-yellow-400 text-yellow-900 px-3 py-2 rounded-lg flex items-center gap-2 text-sm font-bold">
             <span className="text-lg">🧪</span>
-            <span>MODO LABORATORIO - Sin autenticación</span>
+            <span>VERSIÓN DEMOSTRACIÓN - Modo Prueba</span>
           </div>
           
           <div className="flex justify-between items-center mb-4">
