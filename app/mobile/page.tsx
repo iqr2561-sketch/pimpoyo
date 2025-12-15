@@ -38,6 +38,7 @@ export default function MobilePage() {
   const [clientSearch, setClientSearch] = useState('')
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false)
   const [whatsAppPhone, setWhatsAppPhone] = useState('')
+  const [whatsAppName, setWhatsAppName] = useState('')
   const [lastSaleNumber, setLastSaleNumber] = useState<string | null>(null)
   const [lastSaleItems, setLastSaleItems] = useState<Array<{ product: Product; quantity: number }>>([])
   const [lastSaleTotal, setLastSaleTotal] = useState(0)
@@ -147,6 +148,9 @@ export default function MobilePage() {
           if (selectedClient?.phone) {
             setWhatsAppPhone(selectedClient.phone)
           }
+          if (selectedClient?.name) {
+            setWhatsAppName(selectedClient.name)
+          }
         }, 300)
       } else {
         const error = await response.json()
@@ -160,8 +164,9 @@ export default function MobilePage() {
     }
   }
 
-  const handleSendWhatsApp = () => {
+  const handleSendWhatsApp = async () => {
     const phoneToUse = selectedClient?.phone || whatsAppPhone
+    const nameToUse = selectedClient?.name || whatsAppName
     
     if (!phoneToUse) {
       toast('Por favor ingresa un número de teléfono', 'error')
@@ -178,9 +183,32 @@ export default function MobilePage() {
       return
     }
 
+    // Si hay nombre y teléfono pero no hay cliente seleccionado, crear cliente
+    if (nameToUse && phoneToUse && !selectedClient) {
+      try {
+        const response = await fetch('/api/clients', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: nameToUse.trim(),
+            phone: phoneToUse.trim(),
+          }),
+        })
+        if (response.ok) {
+          const newClient = await response.json()
+          setSelectedClient(newClient)
+          fetchClients()
+          toast('Cliente creado exitosamente', 'success')
+        }
+      } catch (error) {
+        console.error('Error creating client:', error)
+        // Continuar aunque falle la creación del cliente
+      }
+    }
+
     const message = generarMensajeVentaWhatsApp({
       numeroVenta: lastSaleNumber,
-      nombreCliente: selectedClient?.name,
+      nombreCliente: nameToUse || undefined,
       nombreEmpresa: 'Mi Empresa', // TODO: obtener de la empresa
       total: lastSaleTotal,
       items: lastSaleItems.map(item => ({
@@ -194,6 +222,7 @@ export default function MobilePage() {
     window.open(whatsappLink, '_blank')
     setShowWhatsAppModal(false)
     setWhatsAppPhone('')
+    setWhatsAppName('')
     setLastSaleNumber(null)
     setLastSaleItems([])
     setLastSaleTotal(0)
@@ -236,7 +265,7 @@ export default function MobilePage() {
               </Button>
             </Link>
           </div>
-          <div className="flex justify-center mb-2">
+          <div className="flex justify-center mb-4">
             <Button
               onClick={() => setShowClientModal(true)}
               className="bg-white/20 hover:bg-white/30 text-white border-white/30 shadow-md"
@@ -245,13 +274,6 @@ export default function MobilePage() {
               👤 {selectedClient ? 'Cliente: ' + selectedClient.name : 'Seleccionar Cliente'}
             </Button>
           </div>
-          {selectedClient && (
-            <div className="text-center mb-3">
-              <span className="text-xs text-emerald-300 font-medium">
-                {selectedClient.name}
-              </span>
-            </div>
-          )}
           <Input
             placeholder="🔍 Buscar producto por nombre o código..."
             value={searchTerm}
@@ -580,7 +602,13 @@ export default function MobilePage() {
                 <div className="text-sm text-slate-600">📱 {selectedClient.phone}</div>
               </div>
             ) : (
-              <div className="mb-4">
+              <div className="mb-4 space-y-3">
+                <Input
+                  label="Nombre del cliente"
+                  placeholder="Ingresa el nombre..."
+                  value={whatsAppName}
+                  onChange={(e) => setWhatsAppName(e.target.value)}
+                />
                 <Input
                   label="Número de teléfono"
                   placeholder="+54 9 11 1234-5678"
@@ -588,6 +616,9 @@ export default function MobilePage() {
                   onChange={(e) => setWhatsAppPhone(e.target.value)}
                   type="tel"
                 />
+                <p className="text-xs text-slate-500">
+                  Si completas ambos campos, se guardará como nuevo cliente
+                </p>
               </div>
             )}
             <div className="flex gap-3">
@@ -597,6 +628,7 @@ export default function MobilePage() {
                 onClick={() => {
                   setShowWhatsAppModal(false)
                   setWhatsAppPhone('')
+                  setWhatsAppName('')
                   setLastSaleNumber(null)
                 }}
               >
