@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency, generateWhatsAppLink, generarMensajeVentaWhatsApp } from '@/lib/utils'
 import Link from 'next/link'
 import { useToast } from '@/components/ui/Toast'
 
@@ -18,6 +18,13 @@ interface Product {
   }
 }
 
+interface Client {
+  id: string
+  name: string
+  phone?: string | null
+  email?: string | null
+}
+
 export default function MobilePage() {
   const { toast } = useToast()
   const [products, setProducts] = useState<Product[]>([])
@@ -25,11 +32,35 @@ export default function MobilePage() {
   const [cart, setCart] = useState<Array<{ product: Product; quantity: number }>>([])
   const [isProcessing, setIsProcessing] = useState(false)
   const [showCart, setShowCart] = useState(false)
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null)
+  const [showClientModal, setShowClientModal] = useState(false)
+  const [clients, setClients] = useState<Client[]>([])
+  const [clientSearch, setClientSearch] = useState('')
+  const [showWhatsAppModal, setShowWhatsAppModal] = useState(false)
+  const [whatsAppPhone, setWhatsAppPhone] = useState('')
+  const [lastSaleNumber, setLastSaleNumber] = useState<string | null>(null)
+  const [lastSaleItems, setLastSaleItems] = useState<Array<{ product: Product; quantity: number }>>([])
+  const [lastSaleTotal, setLastSaleTotal] = useState(0)
+  const [swipedItemId, setSwipedItemId] = useState<string | null>(null)
+  const [touchStartX, setTouchStartX] = useState<{ [key: string]: number }>({})
 
   useEffect(() => {
     // Cargar productos siempre, sin requerir sesión
     fetchProducts()
+    fetchClients()
   }, [])
+
+  const fetchClients = async () => {
+    try {
+      const response = await fetch('/api/clients')
+      if (response.ok) {
+        const data = await response.json()
+        setClients(data)
+      }
+    } catch (error) {
+      console.error('Error fetching clients:', error)
+    }
+  }
 
   const fetchProducts = async () => {
     try {
@@ -93,15 +124,28 @@ export default function MobilePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           items,
-          clientId: null, // Modo laboratorio - sin cliente
+          clientId: selectedClient?.id || null,
           paymentMethod: 'CASH',
         }),
       })
 
       if (response.ok) {
+        const saleData = await response.json()
+        setLastSaleNumber(saleData.number)
+        // Guardar items y total antes de limpiar el carrito
+        setLastSaleItems([...cart])
+        setLastSaleTotal(total)
         toast('Venta realizada exitosamente', 'success')
         setCart([])
         fetchProducts() // Actualizar stock
+        setShowCart(false)
+        // Mostrar modal de WhatsApp después de un breve delay
+        setTimeout(() => {
+          setShowWhatsAppModal(true)
+          if (selectedClient?.phone) {
+            setWhatsAppPhone(selectedClient.phone)
+          }
+        }, 300)
       } else {
         const error = await response.json()
         toast(error.error || 'Error al realizar la venta', 'error')
@@ -112,6 +156,45 @@ export default function MobilePage() {
     } finally {
       setIsProcessing(false)
     }
+  }
+
+  const handleSendWhatsApp = () => {
+    const phoneToUse = selectedClient?.phone || whatsAppPhone
+    
+    if (!phoneToUse) {
+      toast('Por favor ingresa un número de teléfono', 'error')
+      return
+    }
+
+    if (!lastSaleNumber) {
+      toast('Error: No se encontró el número de operación', 'error')
+      return
+    }
+
+    if (lastSaleItems.length === 0) {
+      toast('Error: No se encontraron items para el mensaje', 'error')
+      return
+    }
+
+    const message = generarMensajeVentaWhatsApp({
+      numeroVenta: lastSaleNumber,
+      nombreCliente: selectedClient?.name,
+      nombreEmpresa: 'Mi Empresa', // TODO: obtener de la empresa
+      total: lastSaleTotal,
+      items: lastSaleItems.map(item => ({
+        nombre: item.product.name,
+        cantidad: item.quantity,
+        precio: item.product.price,
+      })),
+    })
+
+    const whatsappLink = generateWhatsAppLink(phoneToUse, message)
+    window.open(whatsappLink, '_blank')
+    setShowWhatsAppModal(false)
+    setWhatsAppPhone('')
+    setLastSaleNumber(null)
+    setLastSaleItems([])
+    setLastSaleTotal(0)
   }
 
   const subtotal = cart.reduce(
@@ -151,16 +234,38 @@ export default function MobilePage() {
               </Button>
             </Link>
           </div>
-          <Input
-            placeholder="🔍 Buscar producto por nombre o código..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="shadow-md"
-          />
+          <div className="flex gap-2">
+            <Input
+              placeholder="🔍 Buscar producto por nombre o código..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="shadow-md flex-1"
+            />
+            <Button
+              onClick={() => setShowClientModal(true)}
+              className="bg-white/20 hover:bg-white/30 text-white border-white/30 shadow-md"
+              size="sm"
+            >
+              👤 {selectedClient ? selectedClient.name.substring(0, 10) + '...' : 'Cliente'}
+            </Button>
+          </div>
         </div>
       </div>
 
       <div className="p-4">
+        {/* Texto sutil de desarrollo */}
+        <div className="text-center mb-3">
+          <a
+            href="https://wa.me/5492245506078"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[10px] text-slate-400 hover:text-slate-500 transition-colors"
+          >
+            bajo desarrollo por{' '}
+            <span className="underline decoration-dotted">surconexion</span>
+          </a>
+        </div>
+        
         {/* Lista de Productos */}
         <div className="grid grid-cols-2 gap-3 mb-4">
           {filteredProducts.map((product) => {
@@ -248,36 +353,97 @@ export default function MobilePage() {
               </div>
             </div>
             <div className="max-h-36 overflow-y-auto mb-3 space-y-2">
-              {cart.map((item) => (
-                <div
-                  key={item.product.id}
-                  className="flex items-center justify-between bg-gradient-to-r from-slate-50 to-slate-100 p-3 rounded-lg border border-slate-200 shadow-sm"
-                >
-                  <div className="flex-1 min-w-0 mr-2">
-                    <p className="text-sm font-bold text-slate-900 truncate">
-                      {item.product.name}
-                    </p>
-                    <p className="text-xs text-slate-600 font-medium">
-                      {formatCurrency(item.product.price)} × {item.quantity}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                      className="w-8 h-8 rounded-lg bg-red-500 hover:bg-red-600 text-white font-bold flex items-center justify-center shadow-sm active:scale-95 transition-transform"
+              {cart.map((item) => {
+                const handleTouchStart = (e: React.TouchEvent) => {
+                  setTouchStartX({ ...touchStartX, [item.product.id]: e.targetTouches[0].clientX })
+                }
+
+                const handleTouchMove = (e: React.TouchEvent) => {
+                  const startX = touchStartX[item.product.id]
+                  if (!startX) return
+                  
+                  const currentX = e.targetTouches[0].clientX
+                  const distance = startX - currentX
+                  
+                  if (distance > 50) {
+                    setSwipedItemId(item.product.id)
+                  } else if (distance < -50) {
+                    setSwipedItemId(null)
+                  }
+                }
+
+                const handleTouchEnd = () => {
+                  if (swipedItemId === item.product.id) {
+                    // Si está deslizado, mantener visible el botón de eliminar
+                    // El usuario puede hacer click para eliminar
+                  } else {
+                    setSwipedItemId(null)
+                  }
+                  setTouchStartX({ ...touchStartX, [item.product.id]: 0 })
+                }
+
+                return (
+                  <div
+                    key={item.product.id}
+                    className="relative overflow-hidden"
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                  >
+                    <div
+                      className={`flex items-center justify-between bg-gradient-to-r from-slate-50 to-slate-100 p-3 rounded-lg border border-slate-200 shadow-sm transition-transform duration-300 ${
+                        swipedItemId === item.product.id ? '-translate-x-20' : 'translate-x-0'
+                      }`}
                     >
-                      −
-                    </button>
-                    <span className="w-8 text-center font-bold text-slate-900">{item.quantity}</span>
-                    <button
-                      onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                      className="w-8 h-8 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold flex items-center justify-center shadow-sm active:scale-95 transition-transform"
+                      <div className="flex-1 min-w-0 mr-2">
+                        <p className="text-sm font-bold text-slate-900 truncate">
+                          {item.product.name}
+                        </p>
+                        <p className="text-xs text-slate-600 font-medium">
+                          {formatCurrency(item.product.price)} × {item.quantity}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                          className="w-8 h-8 rounded-lg bg-red-500 hover:bg-red-600 text-white font-bold flex items-center justify-center shadow-sm active:scale-95 transition-transform"
+                        >
+                          −
+                        </button>
+                        <span className="w-8 text-center font-bold text-slate-900">{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                          className="w-8 h-8 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold flex items-center justify-center shadow-sm active:scale-95 transition-transform"
+                        >
+                          +
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            removeFromCart(item.product.id)
+                          }}
+                          className="w-6 h-6 rounded-full bg-red-100 hover:bg-red-200 text-red-600 flex items-center justify-center shadow-sm active:scale-95 transition-all opacity-50 hover:opacity-100"
+                          title="Eliminar"
+                        >
+                          <span className="text-[10px] font-bold leading-none">✕</span>
+                        </button>
+                      </div>
+                    </div>
+                    {/* Botón de eliminar al deslizar */}
+                    <div
+                      className={`absolute right-0 top-0 bottom-0 w-20 bg-red-500 flex items-center justify-center text-white font-bold transition-opacity duration-300 rounded-r-lg ${
+                        swipedItemId === item.product.id ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                      }`}
+                      onClick={() => {
+                        removeFromCart(item.product.id)
+                        setSwipedItemId(null)
+                      }}
                     >
-                      +
-                    </button>
+                      <span className="text-xs">Eliminar</span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
             <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg p-3 mb-3 border border-indigo-200">
               <div className="flex justify-between text-sm mb-2 text-slate-700">
@@ -304,13 +470,137 @@ export default function MobilePage() {
               </Button>
               <Button
                 className="flex-1 text-base font-bold shadow-lg"
-                onClick={() => {
-                  handleSale()
-                  setShowCart(false)
-                }}
+                onClick={handleSale}
                 disabled={isProcessing}
               >
                 {isProcessing ? '⏳...' : '✓ Finalizar'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Selección de Clientes */}
+      {showClientModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+          <div className="bg-white w-full max-h-[80vh] rounded-t-3xl shadow-2xl overflow-hidden">
+            <div className="sticky top-0 bg-gradient-to-r from-indigo-600 to-blue-600 text-white p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-xl font-bold">Seleccionar Cliente</h2>
+                <button
+                  onClick={() => {
+                    setShowClientModal(false)
+                    setClientSearch('')
+                  }}
+                  className="text-white hover:bg-white/20 rounded-full p-2"
+                >
+                  ✕
+                </button>
+              </div>
+              <Input
+                placeholder="🔍 Buscar cliente..."
+                value={clientSearch}
+                onChange={(e) => setClientSearch(e.target.value)}
+                className="bg-white/20 border-white/30 text-white placeholder:text-white/70"
+              />
+            </div>
+            <div className="overflow-y-auto max-h-[60vh] p-4">
+              <button
+                onClick={() => {
+                  setSelectedClient(null)
+                  setShowClientModal(false)
+                  setClientSearch('')
+                }}
+                className="w-full p-4 mb-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-left border-2 border-slate-300"
+              >
+                <div className="font-bold text-slate-900">Sin Cliente</div>
+                <div className="text-sm text-slate-600">Venta sin asignar</div>
+              </button>
+              {clients
+                .filter(client =>
+                  client.name.toLowerCase().includes(clientSearch.toLowerCase()) ||
+                  client.phone?.includes(clientSearch)
+                )
+                .map((client) => (
+                  <button
+                    key={client.id}
+                    onClick={() => {
+                      setSelectedClient(client)
+                      setShowClientModal(false)
+                      setClientSearch('')
+                    }}
+                    className={`w-full p-4 mb-2 rounded-lg text-left border-2 transition-all ${
+                      selectedClient?.id === client.id
+                        ? 'bg-indigo-50 border-indigo-500 ring-2 ring-indigo-300'
+                        : 'bg-white hover:bg-slate-50 border-slate-200'
+                    }`}
+                  >
+                    <div className="font-bold text-slate-900">{client.name}</div>
+                    {client.phone && (
+                      <div className="text-sm text-slate-600">📱 {client.phone}</div>
+                    )}
+                    {client.email && (
+                      <div className="text-sm text-slate-600">✉️ {client.email}</div>
+                    )}
+                  </button>
+                ))}
+              {clients.filter(client =>
+                client.name.toLowerCase().includes(clientSearch.toLowerCase()) ||
+                client.phone?.includes(clientSearch)
+              ).length === 0 && (
+                <div className="text-center py-8 text-slate-500">
+                  No se encontraron clientes
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de WhatsApp */}
+      {showWhatsAppModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">
+              📱 Enviar comprobante por WhatsApp
+            </h2>
+            <p className="text-slate-600 mb-4">
+              ¿Deseas enviar una copia del comprobante de venta por WhatsApp?
+            </p>
+            {selectedClient && selectedClient.phone ? (
+              <div className="mb-4 p-3 bg-indigo-50 rounded-lg border border-indigo-200">
+                <div className="text-sm text-slate-600 mb-1">Cliente seleccionado:</div>
+                <div className="font-bold text-slate-900">{selectedClient.name}</div>
+                <div className="text-sm text-slate-600">📱 {selectedClient.phone}</div>
+              </div>
+            ) : (
+              <div className="mb-4">
+                <Input
+                  label="Número de teléfono"
+                  placeholder="+54 9 11 1234-5678"
+                  value={whatsAppPhone}
+                  onChange={(e) => setWhatsAppPhone(e.target.value)}
+                  type="tel"
+                />
+              </div>
+            )}
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => {
+                  setShowWhatsAppModal(false)
+                  setWhatsAppPhone('')
+                  setLastSaleNumber(null)
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button
+                className="flex-1 bg-green-500 hover:bg-green-600"
+                onClick={handleSendWhatsApp}
+              >
+                📱 Enviar por WhatsApp
               </Button>
             </div>
           </div>

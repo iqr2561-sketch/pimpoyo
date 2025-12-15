@@ -7,13 +7,21 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session?.user?.companyId) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    // Modo demo: usar primera empresa si no hay sesión
+    let companyId = session?.user?.companyId
+    
+    if (!companyId) {
+      const firstCompany = await prisma.company.findFirst()
+      companyId = firstCompany?.id
+    }
+
+    if (!companyId) {
+      return NextResponse.json({ error: 'No hay empresas registradas' }, { status: 404 })
     }
 
     const searchParams = request.nextUrl.searchParams
     const search = searchParams.get('search') || ''
-    const companyId = searchParams.get('companyId') || session.user.companyId
+    companyId = searchParams.get('companyId') || companyId
 
     const clients = await prisma.client.findMany({
       where: {
@@ -43,8 +51,16 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session?.user?.companyId) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    // Modo demo: usar primera empresa si no hay sesión
+    let companyId = session?.user?.companyId
+    
+    if (!companyId) {
+      const firstCompany = await prisma.company.findFirst()
+      companyId = firstCompany?.id
+    }
+
+    if (!companyId) {
+      return NextResponse.json({ error: 'No hay empresas registradas' }, { status: 404 })
     }
 
     const body = await request.json()
@@ -64,7 +80,7 @@ export async function POST(request: NextRequest) {
         address,
         phone,
         email,
-        companyId: session.user.companyId,
+        companyId: companyId,
       },
     })
 

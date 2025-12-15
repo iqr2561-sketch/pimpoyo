@@ -37,7 +37,7 @@ interface Stats {
 
 export default function Dashboard() {
   const { data: session, status } = useSession()
-  const router = useRouter()
+  // const router = useRouter() // No usado en modo demo
   const [documents, setDocuments] = useState<Document[]>([])
   const [stats, setStats] = useState<Stats | null>(null)
   const [isLoading, setIsLoading] = useState(true)

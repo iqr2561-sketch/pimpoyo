@@ -32,26 +32,14 @@ export default function Home() {
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
-    setError('')
-    setSuccess('¡Entrando al modo demostración! 🧪')
-
-    // Modo demo - ir directo a venta móvil sin login
-    setTimeout(() => {
-      window.location.href = '/mobile'
-    }, 500)
+    // En modo demo, no hacer nada con el formulario
+    // Los botones de acceso rápido manejan la navegación
   }
 
   const handleRegister = async (e: FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
-    setError('')
-    setSuccess('¡Entrando al modo demostración! 🧪')
-
-    // Modo demo - ir directo a venta móvil sin registro
-    setTimeout(() => {
-      window.location.href = '/mobile'
-    }, 500)
+    // En modo demo, no hacer nada con el formulario
+    // Los botones de acceso rápido manejan la navegación
   }
 
   const handleDevLogin = async () => {
@@ -208,9 +196,6 @@ export default function Home() {
                       En línea
                     </span>
                   </div>
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Entrando al sistema...' : '🧪 Entrar Modo Demo'}
-                  </Button>
                   <Button
                     type="button"
                     className="w-full bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 hover:from-orange-600 hover:via-amber-600 hover:to-yellow-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
@@ -288,9 +273,6 @@ export default function Home() {
                     }
                     required
                   />
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Entrando al sistema...' : '🧪 Entrar Modo Demo'}
-                  </Button>
                   <Button
                     type="button"
                     className="w-full bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 hover:from-orange-600 hover:via-amber-600 hover:to-yellow-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
