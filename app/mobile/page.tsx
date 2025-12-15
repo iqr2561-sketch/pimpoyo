@@ -46,6 +46,7 @@ export default function MobilePage() {
   const [touchStartX, setTouchStartX] = useState<{ [key: string]: number }>({})
   const [showCreateClientModal, setShowCreateClientModal] = useState(false)
   const [newClientName, setNewClientName] = useState('')
+  const [newClientPhone, setNewClientPhone] = useState('')
 
   useEffect(() => {
     // Cargar productos siempre, sin requerir sesión
@@ -170,6 +171,11 @@ export default function MobilePage() {
     
     if (!phoneToUse) {
       toast('Por favor ingresa un número de teléfono', 'error')
+      return
+    }
+
+    if (!nameToUse) {
+      toast('Por favor ingresa el nombre del cliente', 'error')
       return
     }
 
@@ -603,18 +609,27 @@ export default function MobilePage() {
               </div>
             ) : (
               <div className="mb-4 space-y-3">
+                {selectedClient && !selectedClient.phone && (
+                  <div className="p-3 bg-amber-50 rounded-lg border border-amber-200 mb-3">
+                    <div className="text-sm text-amber-800 mb-1">Cliente seleccionado sin teléfono:</div>
+                    <div className="font-bold text-amber-900">{selectedClient.name}</div>
+                    <div className="text-xs text-amber-700 mt-1">Completa el teléfono para enviar</div>
+                  </div>
+                )}
                 <Input
-                  label="Nombre del cliente"
+                  label="Nombre del cliente *"
                   placeholder="Ingresa el nombre..."
                   value={whatsAppName}
                   onChange={(e) => setWhatsAppName(e.target.value)}
+                  required
                 />
                 <Input
-                  label="Número de teléfono"
+                  label="Número de teléfono *"
                   placeholder="+54 9 11 1234-5678"
                   value={whatsAppPhone}
                   onChange={(e) => setWhatsAppPhone(e.target.value)}
                   type="tel"
+                  required
                 />
                 <p className="text-xs text-slate-500">
                   Si completas ambos campos, se guardará como nuevo cliente
@@ -652,13 +667,21 @@ export default function MobilePage() {
             <h2 className="text-2xl font-bold text-slate-900 mb-4">
               Crear Nuevo Cliente
             </h2>
-            <Input
-              label="Nombre del Cliente"
-              placeholder="Ingresa el nombre..."
-              value={newClientName}
-              onChange={(e) => setNewClientName(e.target.value)}
-              className="mb-4"
-            />
+            <div className="space-y-4 mb-4">
+              <Input
+                label="Nombre del Cliente *"
+                placeholder="Ingresa el nombre..."
+                value={newClientName}
+                onChange={(e) => setNewClientName(e.target.value)}
+              />
+              <Input
+                label="Número de Teléfono"
+                placeholder="+54 9 11 1234-5678"
+                value={newClientPhone}
+                onChange={(e) => setNewClientPhone(e.target.value)}
+                type="tel"
+              />
+            </div>
             <div className="flex gap-3">
               <Button
                 variant="outline"
@@ -666,6 +689,7 @@ export default function MobilePage() {
                 onClick={() => {
                   setShowCreateClientModal(false)
                   setNewClientName('')
+                  setNewClientPhone('')
                 }}
               >
                 Cancelar
@@ -683,6 +707,7 @@ export default function MobilePage() {
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({
                         name: newClientName.trim(),
+                        phone: newClientPhone.trim() || undefined,
                       }),
                     })
                     if (response.ok) {
@@ -690,6 +715,7 @@ export default function MobilePage() {
                       setSelectedClient(newClient)
                       setShowCreateClientModal(false)
                       setNewClientName('')
+                      setNewClientPhone('')
                       fetchClients()
                       toast('Cliente creado exitosamente', 'success')
                     } else {
