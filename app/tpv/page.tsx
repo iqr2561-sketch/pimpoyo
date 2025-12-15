@@ -36,14 +36,9 @@ export default function TPVPage() {
   const [paymentAmount, setPaymentAmount] = useState('')
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/')
-      return
-    }
-
-    if (status === 'authenticated') {
-      fetchProducts()
-    }
+    // Modo demo - permitir acceso sin autenticación
+    // Cargar productos siempre (modo demo)
+    fetchProducts()
   }, [status, router])
 
   const fetchProducts = async () => {

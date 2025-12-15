@@ -36,14 +36,9 @@ export default function ProductsPage() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/')
-      return
-    }
-
-    if (status === 'authenticated') {
-      fetchProducts()
-    }
+    // Modo demo - permitir acceso sin autenticación
+    // Cargar productos siempre (modo demo)
+    fetchProducts()
   }, [status, router])
 
   const fetchProducts = async () => {
@@ -66,7 +61,7 @@ export default function ProductsPage() {
       p.code.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  if (status === 'loading' || isLoading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div>Cargando...</div>
@@ -74,9 +69,10 @@ export default function ProductsPage() {
     )
   }
 
-  if (status === 'unauthenticated') {
-    return null
-  }
+  // Modo demo - no verificar autenticación
+  // if (status === 'unauthenticated') {
+  //   return null
+  // }
 
   return (
     <div className="min-h-screen bg-gray-50">

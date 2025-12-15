@@ -49,15 +49,10 @@ export default function QuickSalePage() {
   const [clientMessage, setClientMessage] = useState('')
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/')
-      return
-    }
-
-    if (status === 'authenticated') {
-      fetchProducts()
-      fetchClients()
-    }
+    // Modo demo - permitir acceso sin autenticación
+    // Cargar datos siempre (modo demo)
+    fetchProducts()
+    fetchClients()
   }, [status, router])
 
   useEffect(() => {
@@ -221,17 +216,18 @@ export default function QuickSalePage() {
       p.code.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div>Cargando...</div>
-      </div>
-    )
-  }
+  // Modo demo - no verificar autenticación
+  // if (status === 'loading') {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center">
+  //       <div>Cargando...</div>
+  //     </div>
+  //   )
+  // }
 
-  if (status === 'unauthenticated') {
-    return null
-  }
+  // if (status === 'unauthenticated') {
+  //   return null
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 text-white">

@@ -33,14 +33,9 @@ export default function UsersPage() {
   })
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/')
-      return
-    }
-
-    if (status === 'authenticated') {
-      fetchUsers()
-    }
+    // Modo demo - permitir acceso sin autenticación
+    // Cargar usuarios siempre (modo demo)
+    fetchUsers()
   }, [status, router])
 
   const fetchUsers = async () => {
@@ -120,13 +115,18 @@ export default function UsersPage() {
     setFormData({ name: '', email: '', password: '' })
   }
 
-  if (status === 'loading' || isLoading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div>Cargando...</div>
       </div>
     )
   }
+
+  // Modo demo - no verificar autenticación
+  // if (status === 'unauthenticated') {
+  //   return null
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">

@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import bcrypt from 'bcryptjs'
 
 export async function GET(
   request: NextRequest,
@@ -23,28 +22,22 @@ export async function GET(
       return NextResponse.json({ error: 'No hay empresas registradas' }, { status: 404 })
     }
 
-    const user = await prisma.user.findUnique({
+    const client = await prisma.client.findUnique({
       where: { id: params.id },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        createdAt: true,
-      },
     })
 
-    if (!user) {
+    if (!client || client.companyId !== companyId) {
       return NextResponse.json(
-        { error: 'Usuario no encontrado' },
+        { error: 'Cliente no encontrado' },
         { status: 404 }
       )
     }
 
-    return NextResponse.json(user)
+    return NextResponse.json(client)
   } catch (error) {
-    console.error('Error fetching user:', error)
+    console.error('Error fetching client:', error)
     return NextResponse.json(
-      { error: 'Error al obtener usuario' },
+      { error: 'Error al obtener cliente' },
       { status: 500 }
     )
   }
@@ -70,41 +63,42 @@ export async function PUT(
     }
 
     const body = await request.json()
-    const { name, password } = body
+    const { name, cuit, address, phone, email } = body
 
-    const user = await prisma.user.findUnique({
+    if (!name) {
+      return NextResponse.json(
+        { error: 'El nombre es requerido' },
+        { status: 400 }
+      )
+    }
+
+    const client = await prisma.client.findUnique({
       where: { id: params.id },
     })
 
-    if (!user || user.companyId !== companyId) {
+    if (!client || client.companyId !== companyId) {
       return NextResponse.json(
-        { error: 'Usuario no encontrado' },
+        { error: 'Cliente no encontrado' },
         { status: 404 }
       )
     }
 
-    const updateData: any = {}
-    if (name) updateData.name = name
-    if (password) {
-      updateData.password = await bcrypt.hash(password, 10)
-    }
-
-    const updated = await prisma.user.update({
+    const updated = await prisma.client.update({
       where: { id: params.id },
-      data: updateData,
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        createdAt: true,
+      data: {
+        name,
+        cuit,
+        address,
+        phone,
+        email,
       },
     })
 
     return NextResponse.json(updated)
   } catch (error) {
-    console.error('Error updating user:', error)
+    console.error('Error updating client:', error)
     return NextResponse.json(
-      { error: 'Error al actualizar usuario' },
+      { error: 'Error al actualizar cliente' },
       { status: 500 }
     )
   }
@@ -129,27 +123,28 @@ export async function DELETE(
       return NextResponse.json({ error: 'No hay empresas registradas' }, { status: 404 })
     }
 
-    const user = await prisma.user.findUnique({
+    const client = await prisma.client.findUnique({
       where: { id: params.id },
     })
 
-    if (!user || user.companyId !== companyId) {
+    if (!client || client.companyId !== companyId) {
       return NextResponse.json(
-        { error: 'Usuario no encontrado' },
+        { error: 'Cliente no encontrado' },
         { status: 404 }
       )
     }
 
-    await prisma.user.delete({
+    await prisma.client.delete({
       where: { id: params.id },
     })
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error deleting user:', error)
+    console.error('Error deleting client:', error)
     return NextResponse.json(
-      { error: 'Error al eliminar usuario' },
+      { error: 'Error al eliminar cliente' },
       { status: 500 }
     )
   }
 }
+

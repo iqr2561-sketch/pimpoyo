@@ -7,15 +7,23 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session?.user?.companyId) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    // Modo demo: usar primera empresa si no hay sesión
+    let companyId = session?.user?.companyId
+    
+    if (!companyId) {
+      const firstCompany = await prisma.company.findFirst()
+      companyId = firstCompany?.id
+    }
+
+    if (!companyId) {
+      return NextResponse.json({ error: 'No hay empresas registradas' }, { status: 404 })
     }
 
     const searchParams = request.nextUrl.searchParams
     const lowStock = searchParams.get('lowStock') === 'true'
 
     const where: any = {
-      companyId: session.user.companyId,
+      companyId: companyId,
     }
 
     if (lowStock) {
@@ -24,7 +32,7 @@ export async function GET(request: NextRequest) {
 
     let stock = await prisma.stock.findMany({
       where: {
-        companyId: session.user.companyId,
+        companyId: companyId,
       },
       include: {
         product: true,
@@ -55,8 +63,16 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session?.user?.companyId) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    // Modo demo: usar primera empresa si no hay sesión
+    let companyId = session?.user?.companyId
+    
+    if (!companyId) {
+      const firstCompany = await prisma.company.findFirst()
+      companyId = firstCompany?.id
+    }
+
+    if (!companyId) {
+      return NextResponse.json({ error: 'No hay empresas registradas' }, { status: 404 })
     }
 
     const body = await request.json()
@@ -74,7 +90,7 @@ export async function POST(request: NextRequest) {
       include: { product: true },
     })
 
-    if (!stock || stock.companyId !== session.user.companyId) {
+    if (!stock || stock.companyId !== companyId) {
       return NextResponse.json(
         { error: 'Producto no encontrado' },
         { status: 404 }
@@ -107,7 +123,7 @@ export async function POST(request: NextRequest) {
             quantity: Math.abs(quantity),
             reason,
             reference,
-            userId: session.user.id,
+            userId: session?.user?.id || null,
           },
         },
       },

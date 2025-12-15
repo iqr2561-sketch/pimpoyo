@@ -34,14 +34,9 @@ export default function DocumentsPage() {
   const [filter, setFilter] = useState('all')
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/')
-      return
-    }
-
-    if (status === 'authenticated') {
-      fetchDocuments()
-    }
+    // Modo demo - permitir acceso sin autenticación
+    // Cargar documentos siempre (modo demo)
+    fetchDocuments()
   }, [status, router, filter])
 
   const fetchDocuments = async () => {
@@ -118,13 +113,18 @@ export default function DocumentsPage() {
     }
   }
 
-  if (status === 'loading' || isLoading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div>Cargando...</div>
       </div>
     )
   }
+
+  // Modo demo - no verificar autenticación
+  // if (status === 'unauthenticated') {
+  //   return null
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">

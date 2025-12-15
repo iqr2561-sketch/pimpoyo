@@ -15,6 +15,7 @@ const navigation = [
   { name: 'Nuevo Documento', href: '/documents/new', icon: '➕' },
   { name: 'Usuarios', href: '/users', icon: '👥' },
   { name: 'Móvil', href: '/mobile', icon: '📱' },
+  { name: 'Configuración', href: '/settings', icon: '⚙️' },
 ]
 
 export function Sidebar() {

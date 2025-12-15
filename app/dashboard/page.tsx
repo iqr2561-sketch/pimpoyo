@@ -152,16 +152,16 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {/* TPV Profesional */}
               <Link href="/tpv">
-                <div className="group relative bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600 rounded-3xl p-8 shadow-2xl hover:shadow-emerald-500/50 transition-all duration-300 hover:scale-105 cursor-pointer border-4 border-emerald-300/50 overflow-hidden">
+                <div className="group relative bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600 rounded-3xl p-8 shadow-2xl hover:shadow-emerald-500/50 transition-all duration-300 hover:scale-105 cursor-pointer border-4 border-emerald-300/50 overflow-hidden h-48 flex flex-col">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="relative z-10">
+                  <div className="relative z-10 flex-1 flex flex-col">
                     <div className="text-sm font-bold text-emerald-100 mb-2 uppercase tracking-wider">
                       Venta rápida
                     </div>
                     <h3 className="text-3xl font-black text-white mb-3 leading-tight">
                       Carrito táctil
                     </h3>
-                    <p className="text-emerald-50 text-sm font-medium">
+                    <p className="text-emerald-50 text-sm font-medium mt-auto">
                       Busca, suma y cobra en segundos.
                     </p>
                   </div>
@@ -171,16 +171,16 @@ export default function Dashboard() {
 
               {/* Facturar/Remito */}
               <Link href="/documents/new">
-                <div className="group relative bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-3xl p-8 shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105 cursor-pointer border-4 border-blue-300/50 overflow-hidden">
+                <div className="group relative bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-3xl p-8 shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105 cursor-pointer border-4 border-blue-300/50 overflow-hidden h-48 flex flex-col">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="relative z-10">
+                  <div className="relative z-10 flex-1 flex flex-col">
                     <div className="text-sm font-bold text-blue-100 mb-2 uppercase tracking-wider">
                       Documentos
                     </div>
                     <h3 className="text-3xl font-black text-white mb-3 leading-tight">
                       Factura / Remito
                     </h3>
-                    <p className="text-blue-50 text-sm font-medium">
+                    <p className="text-blue-50 text-sm font-medium mt-auto">
                       IVA, notas y PDF listos.
                     </p>
                   </div>
@@ -190,16 +190,16 @@ export default function Dashboard() {
 
               {/* Clientes */}
               <Link href="/clients">
-                <div className="group relative bg-gradient-to-br from-cyan-500 via-teal-500 to-cyan-600 rounded-3xl p-8 shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300 hover:scale-105 cursor-pointer border-4 border-cyan-300/50 overflow-hidden">
+                <div className="group relative bg-gradient-to-br from-cyan-500 via-teal-500 to-cyan-600 rounded-3xl p-8 shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300 hover:scale-105 cursor-pointer border-4 border-cyan-300/50 overflow-hidden h-48 flex flex-col">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="relative z-10">
+                  <div className="relative z-10 flex-1 flex flex-col">
                     <div className="text-sm font-bold text-cyan-100 mb-2 uppercase tracking-wider">
                       Clientes
                     </div>
                     <h3 className="text-3xl font-black text-white mb-3 leading-tight">
                       Ctas. Corrientes
                     </h3>
-                    <p className="text-cyan-50 text-sm font-medium">
+                    <p className="text-cyan-50 text-sm font-medium mt-auto">
                       Alta rápida y búsqueda.
                     </p>
                   </div>
@@ -207,22 +207,22 @@ export default function Dashboard() {
                 </div>
               </Link>
 
-              {/* Ventas */}
-              <Link href="/sales">
-                <div className="group relative bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 rounded-3xl p-8 shadow-2xl hover:shadow-amber-500/50 transition-all duration-300 hover:scale-105 cursor-pointer border-4 border-amber-300/50 overflow-hidden">
+              {/* Configuración */}
+              <Link href="/settings">
+                <div className="group relative bg-gradient-to-br from-purple-500 via-pink-500 to-purple-600 rounded-3xl p-8 shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105 cursor-pointer border-4 border-purple-300/50 overflow-hidden h-48 flex flex-col">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="relative z-10">
-                    <div className="text-sm font-bold text-amber-100 mb-2 uppercase tracking-wider">
-                      Accesos
+                  <div className="relative z-10 flex-1 flex flex-col">
+                    <div className="text-sm font-bold text-purple-100 mb-2 uppercase tracking-wider">
+                      Sistema
                     </div>
                     <h3 className="text-3xl font-black text-white mb-3 leading-tight">
-                      Atajos
+                      Configuración
                     </h3>
-                    <p className="text-amber-50 text-sm font-medium">
-                      Documentos y panel.
+                    <p className="text-purple-50 text-sm font-medium mt-auto">
+                      Datos fiscales y ajustes.
                     </p>
                   </div>
-                  <div className="absolute -bottom-6 -right-6 text-white/10 text-9xl">📊</div>
+                  <div className="absolute -bottom-6 -right-6 text-white/10 text-9xl">⚙️</div>
                 </div>
               </Link>
             </div>

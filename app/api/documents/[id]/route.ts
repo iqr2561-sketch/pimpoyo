@@ -10,8 +10,16 @@ export async function GET(
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session?.user?.companyId) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    // Modo demo: usar primera empresa si no hay sesión
+    let companyId = session?.user?.companyId
+    
+    if (!companyId) {
+      const firstCompany = await prisma.company.findFirst()
+      companyId = firstCompany?.id
+    }
+
+    if (!companyId) {
+      return NextResponse.json({ error: 'No hay empresas registradas' }, { status: 404 })
     }
 
     const document = await prisma.document.findUnique({
@@ -30,7 +38,7 @@ export async function GET(
       )
     }
 
-    if (document.companyId !== session.user.companyId) {
+    if (document.companyId !== companyId) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
     }
 
@@ -51,8 +59,16 @@ export async function PUT(
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session?.user?.companyId) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    // Modo demo: usar primera empresa si no hay sesión
+    let companyId = session?.user?.companyId
+    
+    if (!companyId) {
+      const firstCompany = await prisma.company.findFirst()
+      companyId = firstCompany?.id
+    }
+
+    if (!companyId) {
+      return NextResponse.json({ error: 'No hay empresas registradas' }, { status: 404 })
     }
 
     const document = await prisma.document.findUnique({
@@ -66,7 +82,7 @@ export async function PUT(
       )
     }
 
-    if (document.companyId !== session.user.companyId) {
+    if (document.companyId !== companyId) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
     }
 
@@ -121,8 +137,16 @@ export async function DELETE(
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session?.user?.companyId) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    // Modo demo: usar primera empresa si no hay sesión
+    let companyId = session?.user?.companyId
+    
+    if (!companyId) {
+      const firstCompany = await prisma.company.findFirst()
+      companyId = firstCompany?.id
+    }
+
+    if (!companyId) {
+      return NextResponse.json({ error: 'No hay empresas registradas' }, { status: 404 })
     }
 
     const document = await prisma.document.findUnique({
@@ -136,7 +160,7 @@ export async function DELETE(
       )
     }
 
-    if (document.companyId !== session.user.companyId) {
+    if (document.companyId !== companyId) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
     }
 

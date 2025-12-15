@@ -14,22 +14,22 @@ export default function NewDocument() {
   const router = useRouter()
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/')
-    }
+    // Modo demo - permitir acceso sin autenticación
+    // No hacer nada, la página funciona sin autenticación
   }, [status, router])
 
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div>Cargando...</div>
-      </div>
-    )
-  }
+  // Modo demo - no verificar autenticación
+  // if (status === 'loading') {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center">
+  //       <div>Cargando...</div>
+  //     </div>
+  //   )
+  // }
 
-  if (status === 'unauthenticated') {
-    return null
-  }
+  // if (status === 'unauthenticated') {
+  //   return null
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
