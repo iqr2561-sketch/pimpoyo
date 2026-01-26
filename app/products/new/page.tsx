@@ -81,14 +81,28 @@ export default function NewProduct() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div>Cargando...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+        <div className="text-center">
+          <div className="text-4xl mb-4">⏳</div>
+          <p className="text-slate-600 font-medium">Cargando...</p>
+        </div>
       </div>
     )
   }
 
   if (status === 'unauthenticated') {
-    return null
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+        <div className="text-center">
+          <div className="text-6xl mb-4">🔒</div>
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">Acceso Denegado</h2>
+          <p className="text-slate-600 mb-6">Debes iniciar sesión para acceder a esta página</p>
+          <Button onClick={() => router.push('/api/auth/signin')}>
+            Ir al Login
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   return (
