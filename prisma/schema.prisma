@@ -38,6 +38,7 @@ model Company {
   clients           Client[]
   documents         Document[]
   products          Product[]
+  categories        Category[]
   stock             Stock[]
   sales             Sale[]
   createdAt         DateTime  @default(now())
@@ -64,6 +65,19 @@ model Client {
   updatedAt       DateTime   @updatedAt
 }
 
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  description String?
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+  products  Product[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([companyId, name])
+}
+
 model Product {
   id          String   @id @default(cuid())
   code        String   @unique
@@ -72,7 +86,10 @@ model Product {
   description String?
   price       Float
   cost        Float?   // Costo de compra
-  category    String?
+  margin      Float?   // Margen en porcentaje
+  imageUrl    String?  // URL de la imagen del producto
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
   unit        String   @default("UN") // UN, KG, L, etc.
   companyId   String
   company     Company  @relation(fields: [companyId], references: [id])

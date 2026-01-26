@@ -9,6 +9,7 @@ const navigation = [
   { name: '💳 TPV PROFESIONAL', href: '/tpv', icon: '💳', highlight: true, badge: 'NUEVO' },
   { name: 'Venta Rápida', href: '/sales/quick', icon: '⚡' },
   { name: 'Productos', href: '/products', icon: '📦' },
+  { name: 'Categorías', href: '/products/categories', icon: '📂' },
   { name: 'Stock', href: '/stock', icon: '📋' },
   { name: 'Ventas', href: '/sales', icon: '💰' },
   { name: 'Documentos', href: '/documents', icon: '📄' },
