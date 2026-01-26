@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 
     const searchParams = request.nextUrl.searchParams
     const search = searchParams.get('search') || ''
-    const category = searchParams.get('category')
+    const categoryId = searchParams.get('categoryId')
 
     const products = await prisma.product.findMany({
       where: {
@@ -33,10 +33,11 @@ export async function GET(request: NextRequest) {
             { description: { contains: search } },
           ],
         }),
-        ...(category && { category }),
+        ...(categoryId && { categoryId }),
       },
       include: {
         stock: true,
+        category: true,
       },
       orderBy: { name: 'asc' },
     })
