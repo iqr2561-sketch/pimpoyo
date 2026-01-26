@@ -34,34 +34,46 @@ export default function NewProduct() {
     e.preventDefault()
     setIsSubmitting(true)
 
+    console.log('📝 Iniciando creación de producto con datos:', formData)
+
     try {
+      const payload = {
+        code: formData.code,
+        name: formData.name,
+        description: formData.description || null,
+        price: parseFloat(formData.price),
+        cost: formData.cost ? parseFloat(formData.cost) : null,
+        category: formData.category || null,
+        unit: formData.unit,
+        initialStock: parseFloat(formData.initialStock) || 0,
+        minQuantity: parseFloat(formData.minQuantity) || 0,
+        maxQuantity: formData.maxQuantity ? parseFloat(formData.maxQuantity) : null,
+        location: formData.location || null,
+      }
+
+      console.log('📤 Enviando payload:', payload)
+
       const response = await fetch('/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          code: formData.code,
-          name: formData.name,
-          description: formData.description || null,
-          price: parseFloat(formData.price),
-          cost: formData.cost ? parseFloat(formData.cost) : null,
-          category: formData.category || null,
-          unit: formData.unit,
-          initialStock: parseFloat(formData.initialStock) || 0,
-          minQuantity: parseFloat(formData.minQuantity) || 0,
-          maxQuantity: formData.maxQuantity ? parseFloat(formData.maxQuantity) : null,
-          location: formData.location || null,
-        }),
+        body: JSON.stringify(payload),
       })
 
+      console.log('📩 Respuesta recibida - Status:', response.status)
+
       if (response.ok) {
+        const product = await response.json()
+        console.log('✅ Producto creado exitosamente:', product)
+        alert('✅ Producto creado exitosamente')
         router.push('/products')
       } else {
         const error = await response.json()
-        alert(error.error || 'Error al crear producto')
+        console.error('❌ Error del servidor:', error)
+        alert(`❌ Error: ${error.error || 'Error al crear producto'}${error.details ? '\n\nDetalles: ' + error.details : ''}`)
       }
     } catch (error) {
-      console.error('Error:', error)
-      alert('Error al crear producto')
+      console.error('❌ Error en la solicitud:', error)
+      alert(`❌ Error al conectar con el servidor: ${error instanceof Error ? error.message : 'Error desconocido'}`)
     } finally {
       setIsSubmitting(false)
     }

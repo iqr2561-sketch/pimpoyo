@@ -77,7 +77,7 @@ export default function ClientsPage() {
 
       if (response.ok) {
         alert(editingClient ? 'Cliente actualizado' : 'Cliente creado')
-        setFormData({ name: '', cuit: '', phone: '', email: '', address: '' })
+        setFormData({ name: '', cuit: '', phone: '', email: '', address: '', condicionIVA: 'CONSUMIDOR_FINAL', tipoDocumento: 'CUIT' })
         setShowCreateForm(false)
         setEditingClient(null)
         fetchClients()

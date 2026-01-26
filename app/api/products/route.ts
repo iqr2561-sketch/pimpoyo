@@ -81,37 +81,54 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Crear producto primero
     const product = await prisma.product.create({
       data: {
         code,
         barcode,
         name,
         description,
-        price,
-        cost,
+        price: parseFloat(String(price)),
+        cost: cost ? parseFloat(String(cost)) : null,
         category,
         unit: unit || 'UN',
         companyId: session.user.companyId,
-        stock: {
-          create: {
-            quantity: initialStock || 0,
-            minQuantity: minQuantity || 0,
-            maxQuantity,
-            location,
-            companyId: session.user.companyId,
-          },
-        },
-      },
-      include: {
-        stock: true,
       },
     })
 
-    return NextResponse.json(product, { status: 201 })
+    // Crear stock después
+    const stock = await prisma.stock.create({
+      data: {
+        productId: product.id,
+        quantity: parseFloat(String(initialStock)) || 0,
+        minQuantity: parseFloat(String(minQuantity)) || 0,
+        maxQuantity: maxQuantity ? parseFloat(String(maxQuantity)) : null,
+        location,
+        companyId: session.user.companyId,
+      },
+    })
+
+    const productWithStock = {
+      ...product,
+      stock,
+    }
+
+    console.log('✅ Producto creado exitosamente:', product.id)
+    return NextResponse.json(productWithStock, { status: 201 })
   } catch (error) {
-    console.error('Error creating product:', error)
+    console.error('❌ Error creating product:', error)
+    
+    // Loguear detalles específicos del error
+    if (error instanceof Error) {
+      console.error('Error message:', error.message)
+      console.error('Error stack:', error.stack)
+    }
+    
     return NextResponse.json(
-      { error: 'Error al crear producto' },
+      { 
+        error: 'Error al crear producto',
+        details: process.env.NODE_ENV === 'development' ? String(error) : undefined
+      },
       { status: 500 }
     )
   }
